@@ -10,16 +10,16 @@ import SwiftUI
 struct LoginView: View {
     
     @StateObject var viewModel = LoginViewViewModel()
+    @State private var showingRegisterView = false
     
     var body: some View {
-        NavigationView{
-            VStack{
+        NavigationView {
+            VStack {
                 // Header
                 HeaderView(title: "Goal Mate",
                            subtitle: "Get things done",
                            angle: -15,
                            background: .orange)
-                
                 
                 // Login form
                 Form {
@@ -36,34 +36,38 @@ struct LoginView: View {
                     TLButton(
                         title: "Log In",
                         background: .green
-                    )
-                    {
+                    ) {
                         viewModel.login()
                     }
-                    
                     .padding()
                 }
-                .offset(y:-50)
+                .offset(y: -50)
                 
-                // Create Acccount
+                // Create Account
                 VStack {
                     Text("New around here?")
                     
-                    // Show Register
-                    NavigationLink("Create An Account", destination: RegisterView())
+                    Button("Create An Account") {
+                        showingRegisterView = true
+                    }
                 }
                 .padding(.bottom, 50)
-                Spacer()
                 
+                Spacer()
+            }
+            .ignoresSafeArea(.keyboard)
+            .sheet(isPresented: $showingRegisterView) {
+                NavigationView {
+                    RegisterView()
+                        .navigationBarItems(leading: Button("Back") {
+                            showingRegisterView = false
+                        })
+                }
             }
         }
-        
-        
     }
-    
-    
-    
 }
+
 struct LoginView_previews: PreviewProvider {
     static var previews: some View {
         LoginView()
