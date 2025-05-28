@@ -11,6 +11,7 @@ struct LoginView: View {
     
     @StateObject var viewModel = LoginViewViewModel()
     @State private var showingRegisterView = false
+    @State private var showPassword = false // New state variable for password visibility
     
     var body: some View {
         NavigationView {
@@ -30,8 +31,23 @@ struct LoginView: View {
                     TextField("Email Address", text: $viewModel.email)
                         .textFieldStyle(DefaultTextFieldStyle())
                         .autocapitalization(.none)
-                    SecureField("Password", text: $viewModel.password)
-                        .textFieldStyle(DefaultTextFieldStyle())
+                    
+                    // Password field with visibility toggle
+                    HStack {
+                        if showPassword {
+                            TextField("Password", text: $viewModel.password)
+                        } else {
+                            SecureField("Password", text: $viewModel.password)
+                        }
+                        
+                        Button(action: {
+                            showPassword.toggle()
+                        }) {
+                            Image(systemName: showPassword ? "eye.slash" : "eye")
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    .textFieldStyle(DefaultTextFieldStyle())
                     
                     TLButton(
                         title: "Log In",
