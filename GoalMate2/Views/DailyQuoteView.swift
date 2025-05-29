@@ -8,11 +8,10 @@
 import SwiftUI
 
 struct DailyQuoteView: View {
-    @State private var quote: Quote?
+    @StateObject private var viewModel = QuoteViewModel()
 
     var body: some View {
         ZStack {
-            // Градиент на фоне
             LinearGradient(
                 gradient: Gradient(colors: [Color.orange, Color.red.opacity(0.8)]),
                 startPoint: .topLeading,
@@ -21,33 +20,20 @@ struct DailyQuoteView: View {
             .cornerRadius(20)
             .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
 
-            VStack(spacing: 10) {
+            VStack(spacing: 12) {
                 Text("🔥 Motivation Boost 🔥")
                     .font(.headline)
                     .foregroundColor(.white)
 
-                if let quote = quote {
-                    Text("“\(quote.q)”")
-                        .font(.body)
-                        .italic()
-                        .foregroundColor(.white)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal)
+                content
 
-                    Text("- \(quote.a)")
+                Button(action: {
+                    viewModel.loadQuote()
+                }) {
+                    Text("🔄 Обновить цитату")
                         .font(.caption)
-                        .foregroundColor(.white.opacity(0.85))
+                        .foregroundColor(.white)
                         .padding(.top, 4)
-                } else {
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                        .onAppear {
-                            QuoteService.shared.fetchQuote { result in
-                                DispatchQueue.main.async {
-                                    self.quote = result
-                                }
-                            }
-                        }
                 }
 
                 Text("💪🌟 Keep going!")
@@ -58,5 +44,43 @@ struct DailyQuoteView: View {
         }
         .padding(.horizontal)
         .frame(maxWidth: .infinity)
+        .onAppear {
+            viewModel.loadQuote()
+        }
+    }
+
+    @ViewBuilder
+    private var content: some View {
+        switch viewModel.state {
+        case .idle, .loading:
+            ProgressView()
+                .progressViewStyle(CircularProgressViewStyle(tint: .white))
+
+        case .success(let quote):
+            VStack(spacing: 6) {
+                Text("“\(quote.q)”")
+                    .font(.body)
+                    .italic()
+                    .foregroundColor(.white)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+
+                Text("- \(quote.a)")
+                    .font(.caption)
+                    .foregroundColor(.white.opacity(0.85))
+            }
+
+        case .empty:
+            Text("Цитата пуста. Попробуй ещё раз.")
+                .foregroundColor(.white)
+                .multilineTextAlignment(.center)
+                .padding()
+
+        case .error(let message):
+            Text(message)
+                .foregroundColor(.white)
+                .multilineTextAlignment(.center)
+                .padding()
+        }
     }
 }

@@ -20,17 +20,25 @@
 			remoteGlobalIDString = 8D4CD5A52DE61C8A003B6ED5;
 			remoteInfo = GoalMate2;
 		};
+		8D1EB2492DE8801B004CE60A /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 8D4CD59E2DE61C8A003B6ED5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D4CD5A52DE61C8A003B6ED5;
+			remoteInfo = GoalMate2;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		8D11CAC82DE8474D00D0D76F /* GoalMate2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoalMate2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D1EB2452DE8801B004CE60A /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D4CD5A62DE61C8A003B6ED5 /* GoalMate2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoalMate2.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		8D513D9D2DE8833E00F83575 /* GoalMate2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = GoalMate2Tests.xctest; path = "/Users/aluazholdykan/Desktop/GoalMate/build/Debug-iphoneos/GoalMate2.app/PlugIns/GoalMate2Tests.xctest"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		8D11CAC92DE8474D00D0D76F /* GoalMate2Tests */ = {
+		8D1EB2462DE8801B004CE60A /* Tests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = GoalMate2Tests;
+			path = Tests;
 			sourceTree = "<group>";
 		};
 		8D4CD5A82DE61C8A003B6ED5 /* GoalMate2 */ = {
@@ -42,6 +50,13 @@
 
 /* Begin PBXFrameworksBuildPhase section */
 		8D11CAC52DE8474D00D0D76F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D1EB2422DE8801B004CE60A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -64,7 +79,7 @@
 		8D4CD59D2DE61C8A003B6ED5 = {
 			isa = PBXGroup;
 			children = (
-				8D11CAC92DE8474D00D0D76F /* GoalMate2Tests */,
+				8D1EB2462DE8801B004CE60A /* Tests */,
 				8D4CD5A72DE61C8A003B6ED5 /* Products */,
 				8D4CD5A82DE61C8A003B6ED5 /* GoalMate2 */,
 			);
@@ -74,7 +89,7 @@
 			isa = PBXGroup;
 			children = (
 				8D4CD5A62DE61C8A003B6ED5 /* GoalMate2.app */,
-				8D11CAC82DE8474D00D0D76F /* GoalMate2Tests.xctest */,
+				8D1EB2452DE8801B004CE60A /* Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,14 +110,34 @@
 			dependencies = (
 				8D11CACD2DE8474D00D0D76F /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				8D11CAC92DE8474D00D0D76F /* GoalMate2Tests */,
-			);
 			name = GoalMate2Tests;
 			packageProductDependencies = (
 			);
 			productName = GoalMate2Tests;
-			productReference = 8D11CAC82DE8474D00D0D76F /* GoalMate2Tests.xctest */;
+			productReference = 8D513D9D2DE8833E00F83575 /* GoalMate2Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		8D1EB2442DE8801B004CE60A /* Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 8D1EB24B2DE8801B004CE60A /* Build configuration list for PBXNativeTarget "Tests" */;
+			buildPhases = (
+				8D1EB2412DE8801B004CE60A /* Sources */,
+				8D1EB2422DE8801B004CE60A /* Frameworks */,
+				8D1EB2432DE8801B004CE60A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				8D1EB24A2DE8801B004CE60A /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				8D1EB2462DE8801B004CE60A /* Tests */,
+			);
+			name = Tests;
+			packageProductDependencies = (
+			);
+			productName = Tests;
+			productReference = 8D1EB2452DE8801B004CE60A /* Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		8D4CD5A52DE61C8A003B6ED5 /* GoalMate2 */ = {
@@ -144,6 +179,10 @@
 						CreatedOnToolsVersion = 16.2;
 						TestTargetID = 8D4CD5A52DE61C8A003B6ED5;
 					};
+					8D1EB2442DE8801B004CE60A = {
+						CreatedOnToolsVersion = 16.2;
+						TestTargetID = 8D4CD5A52DE61C8A003B6ED5;
+					};
 					8D4CD5A52DE61C8A003B6ED5 = {
 						CreatedOnToolsVersion = 16.2;
 					};
@@ -168,12 +207,20 @@
 			targets = (
 				8D4CD5A52DE61C8A003B6ED5 /* GoalMate2 */,
 				8D11CAC72DE8474D00D0D76F /* GoalMate2Tests */,
+				8D1EB2442DE8801B004CE60A /* Tests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		8D11CAC62DE8474D00D0D76F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8D1EB2432DE8801B004CE60A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -197,6 +244,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		8D1EB2412DE8801B004CE60A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		8D4CD5A22DE61C8A003B6ED5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -211,6 +265,11 @@
 			isa = PBXTargetDependency;
 			target = 8D4CD5A52DE61C8A003B6ED5 /* GoalMate2 */;
 			targetProxy = 8D11CACC2DE8474D00D0D76F /* PBXContainerItemProxy */;
+		};
+		8D1EB24A2DE8801B004CE60A /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 8D4CD5A52DE61C8A003B6ED5 /* GoalMate2 */;
+			targetProxy = 8D1EB2492DE8801B004CE60A /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -241,6 +300,40 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.alua.zholdykan.GoalMate2Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GoalMate2.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GoalMate2";
+			};
+			name = Release;
+		};
+		8D1EB24C2DE8801B004CE60A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alua.zholdykan.Tests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GoalMate2.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/GoalMate2";
+			};
+			name = Debug;
+		};
+		8D1EB24D2DE8801B004CE60A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.alua.zholdykan.Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
@@ -436,6 +529,15 @@
 			buildConfigurations = (
 				8D11CACF2DE8474D00D0D76F /* Debug */,
 				8D11CAD02DE8474D00D0D76F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		8D1EB24B2DE8801B004CE60A /* Build configuration list for PBXNativeTarget "Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8D1EB24C2DE8801B004CE60A /* Debug */,
+				8D1EB24D2DE8801B004CE60A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
