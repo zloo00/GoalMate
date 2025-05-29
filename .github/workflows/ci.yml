@@ -1,0 +1,33 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '15.0'  # Укажи версию Xcode, которой пользуешься
+
+    - name: Install dependencies (CocoaPods)
+      run: |
+        if [ -f Podfile ]; then
+          pod install
+        fi
+
+    - name: Build app
+      run: xcodebuild -workspace GoalMate2.xcworkspace -scheme GoalMate2 -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=17.0' clean build
+
+    - name: Run tests
+      run: xcodebuild test -workspace GoalMate2.xcworkspace -scheme GoalMate2 -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=17.0' | xcpretty
+
