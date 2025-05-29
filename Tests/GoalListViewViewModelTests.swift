@@ -1,5 +1,13 @@
 //
 //  GoalListViewViewModelTests.swift
+//  GoalMate2
+//
+//  Created by Алуа Жолдыкан on 29.05.2025.
+//
+
+
+//
+//  GoalListViewViewModelTests.swift
 //  GoalMate2Tests
 //
 //  Created by Алуа Жолдыкан on 29.05.2025.
@@ -13,7 +21,7 @@ final class GoalListViewViewModelTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        viewModel = MockGoalListViewViewModel(userId: "testUser123")
+        viewModel = GoalListViewViewModel(userId: "testUser123")
     }
 
     func testAddGoal() {
