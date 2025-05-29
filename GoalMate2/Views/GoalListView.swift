@@ -8,41 +8,34 @@ import FirebaseFirestore
 import SwiftUI
 
 struct GoalListView: View {
-    @StateObject var viewModel : GoalListViewViewModel
-    @FirestoreQuery var items: [GoalListItem]
+    @StateObject var viewModel: GoalListViewViewModel
     private let userId: String
+    
     init(userId: String) {
         self.userId = userId
-        // users/<id>/goals/<entries>
-        self._items = FirestoreQuery(
-            collectionPath: "users/\(userId)/goals"
-        )
-        self._viewModel = StateObject(
-            wrappedValue:
-                GoalListViewViewModel(userId: userId))
+        self._viewModel = StateObject(wrappedValue: GoalListViewViewModel(userId: userId))
     }
+    
     var body: some View {
-        NavigationView{
-            VStack{
-                List(items){
-                    item in
-                    GoalListItemView(item: item)
-                        .swipeActions {
-                            Button("Delete"){
-                                // Delete
-                                viewModel.delete(id: item.id)
-                            }
-                            .tint(.red)
-                            
+        NavigationView {
+            VStack {
+                List {
+                    ForEach(viewModel.goals.indices, id: \.self) { index in
+                        NavigationLink(destination: GoalDetailView(viewModel: viewModel, goal: $viewModel.goals[index])) {
+                            GoalListItemView(item: viewModel.goals[index], viewModel: viewModel)
                         }
+                        .swipeActions {
+                            Button("Delete") {
+                                viewModel.delete(id: viewModel.goals[index].id)
+                            }.tint(.red)
+                        }
+                    }
                 }
                 .listStyle(PlainListStyle())
-                
             }
-            .navigationTitle(Text("Goal List"))
+            .navigationTitle("Goal List")
             .toolbar {
-                Button{
-                    // Action
+                Button {
                     viewModel.showingNewItemView = true
                 } label: {
                     Image(systemName: "plus")
@@ -53,12 +46,4 @@ struct GoalListView: View {
             }
         }
     }
-    
 }
-struct GoalListView_Previews: PreviewProvider {
-    static var previews: some View {
-        GoalListView(userId: "HXIUMzz99DTWgHnhXZloHk7tbuH2")
-    }
-}
-
-
