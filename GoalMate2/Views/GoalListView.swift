@@ -6,10 +6,14 @@
 //
 import FirebaseFirestore
 import SwiftUI
+import RealityKit
+import ARKit
 
 struct GoalListView: View {
     @StateObject var viewModel: GoalListViewViewModel
     private let userId: String
+    
+    @State private var showingARView = false
     
     init(userId: String) {
         self.userId = userId
@@ -18,7 +22,10 @@ struct GoalListView: View {
     
     var body: some View {
         NavigationView {
-            VStack {
+            VStack(spacing: 16) {
+                // Мотивационная цитата — в самом начале
+                DailyQuoteView()
+
                 List {
                     ForEach(viewModel.goals.indices, id: \.self) { index in
                         NavigationLink(destination: GoalDetailView(viewModel: viewModel, goal: $viewModel.goals[index])) {
@@ -35,10 +42,21 @@ struct GoalListView: View {
             }
             .navigationTitle("Goal List")
             .toolbar {
-                Button {
-                    viewModel.showingNewItemView = true
-                } label: {
-                    Image(systemName: "plus")
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button {
+                        viewModel.showingNewItemView = true
+                    } label: {
+                        Image(systemName: "plus")
+                    }
+
+                    Button {
+                        showingARView = true
+                    } label: {
+                        Image(systemName: "arkit")
+                    }
+                    .sheet(isPresented: $showingARView) {
+                        ARViewScreen()
+                    }
                 }
             }
             .sheet(isPresented: $viewModel.showingNewItemView) {

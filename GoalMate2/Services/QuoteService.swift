@@ -1,9 +1,18 @@
+//
+//  QuoteService.swift
+//  GoalMate2
+//
+//  Created by Алуа Жолдыкан on 29.05.2025.
+//
+
+import Foundation
+
 class QuoteService {
     static let shared = QuoteService()
     private let url = URL(string: "https://zenquotes.io/api/random")!
 
-    func fetchRandomQuote(completion: @escaping (Quote?) -> Void) {
-        let task = URLSession.shared.dataTask(with: url) { data, _, error in
+    func fetchQuote(completion: @escaping (Quote?) -> Void) {
+        URLSession.shared.dataTask(with: url) { data, _, error in
             guard let data = data, error == nil else {
                 completion(nil)
                 return
@@ -12,10 +21,9 @@ class QuoteService {
                 let quotes = try JSONDecoder().decode([Quote].self, from: data)
                 completion(quotes.first)
             } catch {
-                print("Decoding error:", error)
+                print("Quote decoding error: \(error)")
                 completion(nil)
             }
-        }
-        task.resume()
+        }.resume()
     }
 }

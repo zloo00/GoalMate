@@ -26,8 +26,7 @@ jobs:
         fi
 
     - name: Build app
-      run: xcodebuild -workspace GoalMate2.xcworkspace -scheme GoalMate2 -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=17.0' clean build
-
+      run: xcodebuild -project GoalMate2.xcodeproj -scheme GoalMate2 -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=17.0' clean build
     - name: Run tests
-      run: xcodebuild test -workspace GoalMate2.xcworkspace -scheme GoalMate2 -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=17.0' | xcpretty
+      run: xcodebuild test -project GoalMate2.xcodeproj -scheme GoalMate2 -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=17.0' | xcpretty
 

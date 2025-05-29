@@ -16,6 +16,8 @@ struct GoalDetailView: View {
     @State private var editedDeadline: Date = Date()
     @State private var showAlert = false
 
+
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
 
@@ -54,15 +56,43 @@ struct GoalDetailView: View {
 
             // Progress bar
             ProgressView(value: progress)
-                .progressViewStyle(LinearProgressViewStyle(tint: .blue))
+                .progressViewStyle(LinearProgressViewStyle(tint: progress == 1.0 ? .green : .blue))
                 .frame(height: 8)
                 .cornerRadius(4)
+                .animation(.easeInOut, value: progress)
 
             Text("Progress: \(Int(progress * 100))%")
                 .font(.caption)
                 .foregroundColor(.secondary)
 
             Divider()
+
+            // NEW: Priority и RepeatRule (если нужны)
+            HStack {
+                Text("Priority: \(goal.priority.rawValue.capitalized)")
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+                Spacer()
+                if goal.repeatRule != .none {
+                    Text("Repeats: \(goal.repeatRule.rawValue.capitalized)")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            // NEW: Если нет подцелей, показать переключатель "Отметить как выполненное"
+            if goal.subGoals?.isEmpty ?? true {
+                Toggle(isOn: Binding(
+                    get: { goal.isDone },
+                    set: {
+                        goal.isDone = $0
+                        viewModel.updateGoal(goal)
+                    })
+                ) {
+                    Text("Mark as Done")
+                        .font(.headline)
+                }
+            }
 
             Text("Subgoals")
                 .font(.headline)
@@ -103,10 +133,16 @@ struct GoalDetailView: View {
             HStack {
                 TextField("New subgoal title", text: $newSubGoalTitle)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .submitLabel(.done)  // добавлено: кнопка Done на клавиатуре
+                    .onSubmit {
+                        addSubGoal()
+                    }
 
                 Button(action: addSubGoal) {
-                    Image(systemName: "plus.circle.fill")
+                    Label("Add", systemImage: "plus.circle.fill")
+                        .labelStyle(IconOnlyLabelStyle())
                         .font(.title2)
+                        .foregroundColor(.blue)
                 }
                 .disabled(newSubGoalTitle.trimmingCharacters(in: .whitespaces).isEmpty)
             }
@@ -119,6 +155,26 @@ struct GoalDetailView: View {
         .onAppear {
             self.editedTitle = goal.title
             self.editedDeadline = Date(timeIntervalSince1970: goal.dueDate)
+        }
+        // NEW: обновлять локальные редактируемые поля при изменении goal
+        .onChange(of: goal.title) { newTitle in
+            editedTitle = newTitle
+        }
+
+        .onChange(of: goal.dueDate) { newDueDate in
+            editedDeadline = Date(timeIntervalSince1970: newDueDate)
+        }
+
+        // NEW: автосохранение при выходе с экрана
+        .onDisappear {
+            if editedTitle != goal.title {
+                goal.title = editedTitle
+            }
+            let newTimestamp = editedDeadline.timeIntervalSince1970
+            if newTimestamp != goal.dueDate {
+                goal.dueDate = newTimestamp
+            }
+            viewModel.updateGoal(goal)
         }
     }
 

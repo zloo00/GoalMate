@@ -1,3 +1,11 @@
+//
+//  QuoteServiceTests.swift
+//  GoalMate2
+//
+//  Created by Алуа Жолдыкан on 29.05.2025.
+//
+
+
 import XCTest
 @testable import GoalMate2
 
