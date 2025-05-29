@@ -11,22 +11,28 @@ jobs:
     runs-on: macos-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout source code
       uses: actions/checkout@v3
 
-    - name: Setup Xcode
+    - name: Select Xcode version
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: '15.0'  # Укажи версию Xcode, которой пользуешься
+        xcode-version: '15.0'
 
-    - name: Install dependencies (CocoaPods)
+    - name: Build the app
       run: |
-        if [ -f Podfile ]; then
-          pod install
-        fi
+        xcodebuild clean build \
+          -project GoalMate2.xcodeproj \
+          -scheme GoalMate2 \
+          -sdk iphonesimulator \
+          -destination 'platform=iOS Simulator,name=iPhone 14,OS=17.0' \
+          | xcpretty
 
-    - name: Build app
-      run: xcodebuild -project GoalMate2.xcodeproj -scheme GoalMate2 -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=17.0' clean build
-    - name: Run tests
-      run: xcodebuild test -project GoalMate2.xcodeproj -scheme GoalMate2 -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 14,OS=17.0' | xcpretty
-
+    - name: Run unit tests
+      run: |
+        xcodebuild test \
+          -project GoalMate2.xcodeproj \
+          -scheme GoalMate2 \
+          -sdk iphonesimulator \
+          -destination 'platform=iOS Simulator,name=iPhone 14,OS=17.0' \
+          | xcpretty --test --color
