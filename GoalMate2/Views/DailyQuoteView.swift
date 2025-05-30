@@ -30,7 +30,7 @@ struct DailyQuoteView: View {
                 Button(action: {
                     viewModel.loadQuote()
                 }) {
-                    Text("🔄 Обновить цитату")
+                    Text("🔄 Update Quote")
                         .font(.caption)
                         .foregroundColor(.white)
                         .padding(.top, 4)
@@ -71,7 +71,7 @@ struct DailyQuoteView: View {
             }
 
         case .empty:
-            Text("Цитата пуста. Попробуй ещё раз.")
+            Text("Quote is empty. Try again.")
                 .foregroundColor(.white)
                 .multilineTextAlignment(.center)
                 .padding()

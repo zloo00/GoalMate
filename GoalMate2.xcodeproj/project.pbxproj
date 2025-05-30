@@ -32,8 +32,18 @@
 /* Begin PBXFileReference section */
 		8D1EB2452DE8801B004CE60A /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D4CD5A62DE61C8A003B6ED5 /* GoalMate2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GoalMate2.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		8D513D9D2DE8833E00F83575 /* GoalMate2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = GoalMate2Tests.xctest; path = "/Users/aluazholdykan/Desktop/GoalMate/build/Debug-iphoneos/GoalMate2.app/PlugIns/GoalMate2Tests.xctest"; sourceTree = "<absolute>"; };
+		8D513DEC2DE986F200F83575 /* GoalMate2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoalMate2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		8D513E362DE9B70800F83575 /* Exceptions for "GoalMate2" folder in "GoalMate2" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 8D4CD5A52DE61C8A003B6ED5 /* GoalMate2 */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		8D1EB2462DE8801B004CE60A /* Tests */ = {
@@ -43,6 +53,9 @@
 		};
 		8D4CD5A82DE61C8A003B6ED5 /* GoalMate2 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				8D513E362DE9B70800F83575 /* Exceptions for "GoalMate2" folder in "GoalMate2" target */,
+			);
 			path = GoalMate2;
 			sourceTree = "<group>";
 		};
@@ -90,6 +103,7 @@
 			children = (
 				8D4CD5A62DE61C8A003B6ED5 /* GoalMate2.app */,
 				8D1EB2452DE8801B004CE60A /* Tests.xctest */,
+				8D513DEC2DE986F200F83575 /* GoalMate2Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -114,7 +128,7 @@
 			packageProductDependencies = (
 			);
 			productName = GoalMate2Tests;
-			productReference = 8D513D9D2DE8833E00F83575 /* GoalMate2Tests.xctest */;
+			productReference = 8D513DEC2DE986F200F83575 /* GoalMate2Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		8D1EB2442DE8801B004CE60A /* Tests */ = {
@@ -472,7 +486,10 @@
 				DEVELOPMENT_TEAM = 25V88933DU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GoalMate2/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Goal Mate";
+				INFOPLIST_KEY_MetalCaptureEnabled = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app needs camera access for AR features";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -502,7 +519,10 @@
 				DEVELOPMENT_TEAM = 25V88933DU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = GoalMate2/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = "Goal Mate";
+				INFOPLIST_KEY_MetalCaptureEnabled = YES;
+				INFOPLIST_KEY_NSCameraUsageDescription = "This app needs camera access for AR features";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
