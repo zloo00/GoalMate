@@ -14,6 +14,7 @@ struct GoalListView: View {
     private let userId: String
     
     @State private var showingARView = false
+    @State private var itemToDelete: String? = nil
     
     init(userId: String) {
         self.userId = userId
@@ -23,7 +24,6 @@ struct GoalListView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 16) {
-                // Мотивационная цитата — в самом начале
                 DailyQuoteView()
 
                 List {
@@ -33,12 +33,25 @@ struct GoalListView: View {
                         }
                         .swipeActions {
                             Button("Delete") {
-                                viewModel.delete(id: viewModel.goals[index].id)
+                                itemToDelete = viewModel.goals[index].id
                             }.tint(.red)
                         }
                     }
                 }
                 .listStyle(PlainListStyle())
+            }
+            .alert("Confirm Deletion", isPresented: Binding<Bool>(
+                get: { itemToDelete != nil },
+                set: { _ in itemToDelete = nil }
+            )) {
+                Button("Delete", role: .destructive) {
+                    if let id = itemToDelete {
+                        viewModel.delete(id: id)
+                    }
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Are you sure you want to delete this goal?")
             }
             .navigationTitle("Goal List")
             .toolbar {

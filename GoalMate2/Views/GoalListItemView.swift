@@ -1,19 +1,22 @@
 //
-//  GoalListViewItem.swift
+//  GoalListItemView.swift
 //  GoalMate2
 //
 //  Created by Алуа Жолдыкан on 28.05.2025.
 //
 
 import SwiftUI
+
 struct GoalListItemView: View {
-    var item: GoalListItem
-    @ObservedObject var viewModel: GoalListViewViewModel
+    let item: GoalListItem
+    @ObservedObject var viewModel: GoalListItemViewViewModel
     @State private var isExpanded = false
+    @State private var showingEditAlert = false
+    @State private var newTitle = ""
 
     init(item: GoalListItem, viewModel: GoalListViewViewModel) {
         self.item = item
-        self._viewModel = ObservedObject(wrappedValue: viewModel)
+        self._viewModel = ObservedObject(wrappedValue: GoalListItemViewViewModel(parentViewModel: viewModel))
     }
 
     var body: some View {
@@ -40,11 +43,8 @@ struct GoalListItemView: View {
             }
 
             HStack(spacing: 20) {
-                // MARK DONE button
                 Button {
-                    withAnimation {
-                        viewModel.toggleIsDone(item: item)
-                    }
+                    viewModel.toggleIsDone(item: item)
                 } label: {
                     VStack {
                         Image(systemName: item.isDone ? "checkmark.circle.fill" : "circle")
@@ -57,7 +57,6 @@ struct GoalListItemView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
 
-                // SHOW DETAILS button
                 Button {
                     withAnimation {
                         isExpanded.toggle()
@@ -73,6 +72,22 @@ struct GoalListItemView: View {
                     }
                 }
                 .buttonStyle(PlainButtonStyle())
+
+                Button {
+                    newTitle = item.title
+                    showingEditAlert = true
+                } label: {
+                    VStack {
+                        Image(systemName: "pencil.circle.fill")
+                            .foregroundColor(.blue)
+                            .imageScale(.large)
+                        Text("Edit")
+                            .font(.caption2)
+                            .foregroundColor(.blue)
+                    }
+                }
+                .buttonStyle(PlainButtonStyle())
+                .accessibilityLabel("Edit Goal")
             }
             .padding(.vertical, 6)
 
@@ -126,9 +141,7 @@ struct GoalListItemView: View {
                                     ForEach(subGoals) { sub in
                                         HStack(spacing: 12) {
                                             Button {
-                                                withAnimation {
-                                                    viewModel.toggleSubGoalDone(parent: item, subGoal: sub)
-                                                }
+                                                viewModel.toggleSubGoalDone(parent: item, subGoal: sub)
                                             } label: {
                                                 Image(systemName: sub.isDone ? "checkmark.circle.fill" : "circle")
                                                     .foregroundColor(sub.isDone ? .green : .blue)
@@ -152,14 +165,19 @@ struct GoalListItemView: View {
                 .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
+        .alert("Edit Goal Title", isPresented: $showingEditAlert) {
+            TextField("New title", text: $newTitle)
+            Button("Save") {
+                viewModel.editGoalTitle(item: item, newTitle: newTitle)
+            }
+            Button("Cancel", role: .cancel) {}
+        }
         .padding(.vertical, 8)
         .padding(.horizontal, 12)
         .background(Color(.systemBackground))
         .cornerRadius(10)
         .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
     }
-
-    // MARK: - Helpers
 
     private func priorityText(_ priority: GoalListItem.Priority) -> String {
         switch priority {

@@ -10,7 +10,7 @@ import SwiftUI
 struct NewItemView: View {
     @StateObject var viewModel = NewItemViewViewModel()
     @Binding var newItemPresented: Bool
-    
+
     @State private var isSelectingEndDate = false
 
     var body: some View {
@@ -21,6 +21,25 @@ struct NewItemView: View {
                 .padding(.top, 40)
 
             Form {
+                Section(header: Text("Details")) {
+                    TextField("Title", text: $viewModel.title)
+                        .textFieldStyle(DefaultTextFieldStyle())
+
+                    TextField("Note (optional)", text: $viewModel.note)
+                        .textFieldStyle(DefaultTextFieldStyle())
+
+                    TextField("Tags (comma separated)", text: $viewModel.tags)
+                        .textFieldStyle(DefaultTextFieldStyle())
+
+                    Picker("Priority", selection: $viewModel.priority) {
+                        ForEach(GoalListItem.Priority.allCases, id: \.self) { priority in
+                            Text(priority.rawValue.capitalized)
+                                .tag(priority)
+                        }
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                }
+
                 Section(header: Text("Repeat")) {
                     Picker("Repeat Rule", selection: $viewModel.repeatRule) {
                         ForEach(GoalListItem.RepeatRule.allCases) { rule in
@@ -29,14 +48,14 @@ struct NewItemView: View {
                         }
                     }
                     .pickerStyle(MenuPickerStyle())
-                    
+
                     if viewModel.repeatRule != .none && viewModel.repeatRule != .custom {
                         Picker("Select", selection: $isSelectingEndDate) {
                             Text("Start").tag(false)
                             Text("End").tag(true)
                         }
                         .pickerStyle(SegmentedPickerStyle())
-                        
+
                         DatePicker(
                             isSelectingEndDate ? "Repeat End Date" : "Due Date",
                             selection: Binding(
@@ -56,30 +75,10 @@ struct NewItemView: View {
                         )
                         .datePickerStyle(GraphicalDatePickerStyle())
 
-                        // ✅ Добавленный текст
                         Text(daysLeftText)
                             .font(.subheadline)
                             .foregroundColor(.gray)
                     }
-                }
-
-                Section(header: Text("Details")) {
-                    TextField("Title", text: $viewModel.title)
-                        .textFieldStyle(DefaultTextFieldStyle())
-
-                    TextField("Note (optional)", text: $viewModel.note)
-                        .textFieldStyle(DefaultTextFieldStyle())
-
-                    TextField("Tags (comma separated)", text: $viewModel.tags)
-                        .textFieldStyle(DefaultTextFieldStyle())
-
-                    Picker("Priority", selection: $viewModel.priority) {
-                        ForEach(GoalListItem.Priority.allCases, id: \.self) { priority in
-                            Text(priority.rawValue.capitalized)
-                                .tag(priority)
-                        }
-                    }
-                    .pickerStyle(SegmentedPickerStyle())
                 }
 
                 Section {
@@ -102,7 +101,6 @@ struct NewItemView: View {
         }
     }
 
-    // ✅ Новое вычисляемое свойство
     private var daysLeftText: String {
         let calendar = Calendar.current
         let fromDate = calendar.startOfDay(for: Date())

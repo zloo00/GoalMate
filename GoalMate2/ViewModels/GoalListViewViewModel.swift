@@ -85,7 +85,29 @@ class GoalListViewViewModel: ObservableObject {
         }
     }
     
-    // Добавить подзадачу
+    func updateGoalTitle(item: GoalListItem, newTitle: String) {
+        guard let index = goals.firstIndex(where: { $0.id == item.id }) else { return }
+        
+        var updatedItem = item
+        updatedItem.title = newTitle
+        
+        goals[index] = updatedItem
+        
+        let db = Firestore.firestore()
+        db.collection("users")
+            .document(userId)
+            .collection("goals")
+            .document(item.id)
+            .updateData([
+                "title": newTitle
+            ]) { error in
+                if let error = error {
+                    print("Error updating goal title: \(error.localizedDescription)")
+                }
+            }
+    }
+    
+    // Остальные функции остаются без изменений
     func addSubGoal(to parent: GoalListItem, title: String) {
         guard let index = goals.firstIndex(where: { $0.id == parent.id }) else { return }
         
@@ -109,7 +131,6 @@ class GoalListViewViewModel: ObservableObject {
             }
     }
     
-    // Обновить название подзадачи
     func updateSubGoalTitle(parent: GoalListItem, subGoalID: String, newTitle: String) {
         guard let parentIndex = goals.firstIndex(where: { $0.id == parent.id }),
               var updatedSubGoals = goals[parentIndex].subGoals else { return }
@@ -171,8 +192,4 @@ class GoalListViewViewModel: ObservableObject {
                 }
             }
     }
-
-
-
-
 }
