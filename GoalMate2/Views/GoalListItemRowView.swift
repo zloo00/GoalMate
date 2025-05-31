@@ -57,12 +57,12 @@ struct GoalListItemRowView: View {
     }
 
     private func isOverdue(_ goal: GoalListItem) -> Bool {
-        !goal.isDone && Date(timeIntervalSince1970: goal.dueDate) < Date()
+        !goal.isDone && Date(timeIntervalSince1970: goal.repeatEndDate ?? goal.dueDate) < Date()
     }
 
     private func daysUntilDeadline(for goal: GoalListItem) -> Int {
         let now = Date()
-        let dueDate = Date(timeIntervalSince1970: goal.dueDate)
+        let dueDate = Date(timeIntervalSince1970: goal.repeatEndDate ?? goal.dueDate)
         let calendar = Calendar.current
 
         if dueDate < now {

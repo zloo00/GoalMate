@@ -37,7 +37,7 @@ struct GoalListItemView: View {
 
                 Spacer()
 
-                Text(Date(timeIntervalSince1970: item.dueDate).formatted(date: .abbreviated, time: .shortened))
+                Text(Date(timeIntervalSince1970: item.repeatEndDate ?? item.dueDate).formatted(date: .abbreviated, time: .shortened))
                     .font(.footnote)
                     .foregroundColor(isOverdue(item) ? .red : .secondary)
             }
@@ -196,7 +196,7 @@ struct GoalListItemView: View {
     }
 
     private func isOverdue(_ goal: GoalListItem) -> Bool {
-        !goal.isDone && Date(timeIntervalSince1970: goal.dueDate) < Date()
+        !goal.isDone && Date(timeIntervalSince1970: goal.repeatEndDate ?? goal.dueDate) < Date()
     }
 
     private func isOverdue(_ sub: GoalListItem.SubGoal) -> Bool {
@@ -205,7 +205,7 @@ struct GoalListItemView: View {
 
     private func daysUntilDeadline(for goal: GoalListItem) -> Int {
         let now = Date()
-        let dueDate = Date(timeIntervalSince1970: goal.dueDate)
+        let dueDate = Date(timeIntervalSince1970: goal.repeatEndDate ?? goal.dueDate)
         let calendar = Calendar.current
 
         if dueDate < now {
