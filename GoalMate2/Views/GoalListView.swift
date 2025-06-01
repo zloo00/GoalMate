@@ -2,8 +2,9 @@
 //  GoalListItemsView.swift
 //  GoalMate2
 //
-//  Created by Алуа Жолдыкан on 28.05.2025.
+//  Updated with stylish sorting dropdown
 //
+
 import FirebaseFirestore
 import SwiftUI
 import RealityKit
@@ -15,25 +16,102 @@ struct GoalListView: View {
     
     @State private var showingARView = false
     @State private var itemToDelete: String? = nil
+    @State private var selectedSortOption: SortOption = .priority
+    @State private var showSortOptions = false
+    
+    enum SortOption: String, CaseIterable {
+        case priority = "Priority"
+        case alphabetical = "A-Z"
+        case deadline = "Date"
+        
+        var icon: String {
+            switch self {
+            case .priority: return "flag.fill"
+            case .alphabetical: return "textformat.abc"
+            case .deadline: return "calendar"
+            }
+        }
+    }
     
     init(userId: String) {
         self.userId = userId
         self._viewModel = StateObject(wrappedValue: GoalListViewViewModel(userId: userId))
     }
     
+    private var sortedGoals: [GoalListItem] {
+        switch selectedSortOption {
+        case .priority:
+            return viewModel.goals.sorted {
+                if $0.priority == $1.priority {
+                    return $0.title < $1.title
+                }
+                return $0.priority.rawValue > $1.priority.rawValue
+            }
+        case .alphabetical:
+            return viewModel.goals.sorted { $0.title < $1.title }
+        case .deadline:
+            return viewModel.goals.sorted { $0.dueDate < $1.dueDate }
+        }
+    }
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 16) {
                 DailyQuoteView()
-
+                
+                // Sorting dropdown button
+                HStack {
+                    Menu {
+                        ForEach(SortOption.allCases, id: \.self) { option in
+                            Button(action: {
+                                selectedSortOption = option
+                            }) {
+                                HStack {
+                                    Image(systemName: option.icon)
+                                        .frame(width: 20)
+                                    Text(option.rawValue)
+                                    Spacer()
+                                    if selectedSortOption == option {
+                                        Image(systemName: "checkmark")
+                                            .foregroundColor(.blue)
+                                    }
+                                }
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: selectedSortOption.icon)
+                                .font(.system(size: 14, weight: .medium))
+                            Text(selectedSortOption.rawValue)
+                                .font(.system(size: 14, weight: .medium))
+                            Image(systemName: "chevron.down")
+                                .font(.system(size: 12))
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                        .background(Color(.systemGray6))
+                        .foregroundColor(.blue)
+                        .cornerRadius(10)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(Color(.systemGray4), lineWidth: 1)
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    
+                    Spacer()
+                }
+                .padding(.horizontal)
+                .padding(.top, 8)
+                
                 List {
-                    ForEach(viewModel.goals.indices, id: \.self) { index in
+                    ForEach(sortedGoals.indices, id: \.self) { index in
                         NavigationLink(destination: GoalDetailView(viewModel: viewModel, goal: $viewModel.goals[index])) {
-                            GoalListItemView(item: viewModel.goals[index], viewModel: viewModel)
+                            GoalListItemView(item: sortedGoals[index], viewModel: viewModel)
                         }
                         .swipeActions {
                             Button("Delete") {
-                                itemToDelete = viewModel.goals[index].id
+                                itemToDelete = sortedGoals[index].id
                             }.tint(.red)
                         }
                     }
@@ -76,5 +154,12 @@ struct GoalListView: View {
                 NewItemView(newItemPresented: $viewModel.showingNewItemView)
             }
         }
+    }
+}
+
+// MARK: - Preview
+struct GoalListView_Previews: PreviewProvider {
+    static var previews: some View {
+        GoalListView(userId: "exampleUserId")
     }
 }
