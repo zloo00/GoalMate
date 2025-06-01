@@ -117,10 +117,13 @@ struct GoalListView: View {
                         NavigationLink(destination: GoalDetailView(viewModel: viewModel, goal: $viewModel.goals[index])) {
                             GoalListItemView(item: sortedGoals[index], viewModel: viewModel)
                         }
-                        .swipeActions {
-                            Button("Delete") {
+                        .swipeActions(edge: .trailing) {
+                            Button(role: .destructive) {
                                 itemToDelete = sortedGoals[index].id
-                            }.tint(.red)
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                            .tint(Color.blue)
                         }
                     }
                 }
