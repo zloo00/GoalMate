@@ -1,25 +1,26 @@
 //
-//  Extentions.swift
+//  Extensions.swift
 //  GoalMate2
 //
 //  Created by Алуа Жолдыкан on 28.05.2025.
 //
 
 import Foundation
-    
-extension Encodable{
-    func asDictionary() -> [String: Any]{
+
+extension Encodable {
+    func asDictionary() -> [String: Any] {
         guard let data = try? JSONEncoder().encode(self) else {
             return [:]
         }
         do {
-            let json = try JSONSerialization.jsonObject(with:data) as? [String: Any]
+            let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
             return json ?? [:]
-        } catch{
+        } catch {
             return [:]
         }
     }
 }
+
 extension GoalListItem {
     func asDictionary() -> [String: Any] {
         var dict: [String: Any] = [
@@ -29,7 +30,7 @@ extension GoalListItem {
             "createdDate": createdDate,
             "isDone": isDone,
             "priority": priority.rawValue,
-            "tags": tags,
+            "tags": tags ?? [],
             "repeatRule": repeatRule.rawValue
         ]
 

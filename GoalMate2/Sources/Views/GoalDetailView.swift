@@ -35,7 +35,7 @@ struct GoalDetailView: View {
 
             // Editable Deadline
             DatePicker("Deadline", selection: $editedDeadline, displayedComponents: .date)
-                .onChange(of: editedDeadline) { newValue in
+                .onChange(of: editedDeadline) { _, newValue in
                     if newValue < Date().startOfDay {
                         showAlert = true
                         editedDeadline = Date().startOfDay
@@ -49,7 +49,7 @@ struct GoalDetailView: View {
                         title: Text("Invalid Deadline"),
                         message: Text("Please choose a date that is today or in the future."),
                         dismissButton: .default(Text("OK")))
-                        }
+                }
 
             // Original deadline display
             Text("Deadline: \(Date(timeIntervalSince1970: goal.repeatEndDate ?? goal.dueDate).formatted(date: .abbreviated, time: .omitted))")
@@ -159,11 +159,11 @@ struct GoalDetailView: View {
             self.editedTitle = goal.title
             self.editedDeadline = Date(timeIntervalSince1970: goal.repeatEndDate ?? goal.dueDate)
         }
-        .onChange(of: goal.title) { newTitle in
-            editedTitle = newTitle
+        .onChange(of: goal.title) { oldValue, newValue in
+            editedTitle = newValue
         }
-        .onChange(of: goal.repeatEndDate) { newDueDate in
-            if let newDueDate = newDueDate {
+        .onChange(of: goal.repeatEndDate) { oldValue, newValue in
+            if let newDueDate = newValue {
                 editedDeadline = Date(timeIntervalSince1970: newDueDate)
             }
         }

@@ -44,9 +44,7 @@ struct GoalListItemView: View {
 
             HStack(spacing: 20) {
                 Button {
-                    Task{
-                        await viewModel.toggleIsDone(item: item)
-                    }
+                    viewModel.toggleIsDone(item: item)
                     
                 } label: {
                     VStack {
@@ -144,9 +142,7 @@ struct GoalListItemView: View {
                                     ForEach(subGoals) { sub in
                                         HStack(spacing: 12) {
                                             Button {
-                                                Task{
-                                                    await viewModel.toggleSubGoalDone(parent: item, subGoal: sub)
-                                                }
+                                                viewModel.toggleSubGoalDone(parent: item, subGoal: sub)
                                                 
                                             } label: {
                                                 Image(systemName: sub.isDone ? "checkmark.circle.fill" : "circle")
@@ -174,9 +170,7 @@ struct GoalListItemView: View {
         .alert("Edit Goal Title", isPresented: $showingEditAlert) {
             TextField("New title", text: $newTitle)
             Button("Save") {
-                Task {
-                    await viewModel.editGoalTitle(item: item, newTitle: newTitle)
-                }
+                viewModel.editGoalTitle(item: item, newTitle: newTitle)
                 
             }
             Button("Cancel", role: .cancel) {}

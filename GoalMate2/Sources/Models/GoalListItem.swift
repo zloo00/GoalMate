@@ -38,12 +38,9 @@ struct GoalListItem: Identifiable, Codable {
         var id: String { self.rawValue }
     }
     
-    
-    
     struct SubGoal: Identifiable, Codable {
         var id: String
         var title: String
         var isDone: Bool
-        
     }
 }
