@@ -112,22 +112,31 @@ struct GoalListView: View {
                 .padding(.horizontal)
                 .padding(.top, 8)
                 
-                List {
-                    ForEach(sortedGoals.indices, id: \.self) { index in
-                        NavigationLink(destination: GoalDetailView(viewModel: viewModel, goal: $viewModel.goals[index])) {
-                            GoalListItemView(item: sortedGoals[index], viewModel: viewModel)
-                        }
-                        .swipeActions(edge: .trailing) {
-                            Button(role: .destructive) {
-                                itemToDelete = sortedGoals[index].id
-                            } label: {
-                                Label("Delete", systemImage: "trash")
+                if sortedGoals.isEmpty {
+                    Spacer()
+                    Text("Set your goal")
+                        .font(.title2)
+                        .foregroundColor(.gray)
+                        .italic()
+                    Spacer()
+                } else {
+                    List {
+                        ForEach(sortedGoals.indices, id: \.self) { index in
+                            NavigationLink(destination: GoalDetailView(viewModel: viewModel, goal: $viewModel.goals[index])) {
+                                GoalListItemView(item: sortedGoals[index], viewModel: viewModel)
                             }
-                            .tint(Color.blue)
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    itemToDelete = sortedGoals[index].id
+                                } label: {
+                                    Label("Delete", systemImage: "trash")
+                                }
+                                .tint(Color.blue)
+                            }
                         }
                     }
+                    .listStyle(PlainListStyle())
                 }
-                .listStyle(PlainListStyle())
             }
             .alert("Confirm Deletion", isPresented: Binding<Bool>(
                 get: { itemToDelete != nil },
@@ -150,7 +159,7 @@ struct GoalListView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
-
+                    
                     Button {
                         showingARView = true
                     } label: {

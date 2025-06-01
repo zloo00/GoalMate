@@ -53,7 +53,10 @@ struct LoginView: View {
                         title: "Log In",
                         background: .green
                     ) {
-                        viewModel.login()
+                        Task{
+                            await viewModel.login()
+                        }
+                        
                     }
                     .padding()
                 }

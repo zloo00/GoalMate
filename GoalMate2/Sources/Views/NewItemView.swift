@@ -84,8 +84,10 @@ struct NewItemView: View {
                 Section {
                     TLButton(title: "Save", background: .green) {
                         if viewModel.canSave {
-                            viewModel.save()
-                            newItemPresented = false
+                            Task {
+                                await viewModel.save()
+                                newItemPresented = false
+                            }
                         } else {
                             viewModel.showAlert = true
                         }

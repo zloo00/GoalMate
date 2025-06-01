@@ -5,22 +5,23 @@
 //  Created by Алуа Жолдыкан on 28.05.2025.
 //
 import FirebaseAuth
-import FirebaseFirestore
 import Foundation
 
+@MainActor
 class NewItemViewViewModel: ObservableObject {
-    
     @Published var title = ""
     @Published var dueDate = Date()
     @Published var note = ""
     @Published var priority: GoalListItem.Priority = .medium
-    @Published var tags: String = "" // пользователи вводят через запятую
+    @Published var tags: String = ""
     @Published var showAlert = false
     @Published var repeatRule: GoalListItem.RepeatRule = .none
     @Published var repeatEndDate: Date? = nil
+    @Published var errorMessage = ""
+    @Published var state: DataState = .loaded
 
     init() {}
-    
+
     var canSave: Bool {
         guard !title.trimmingCharacters(in: .whitespaces).isEmpty else {
             return false
@@ -28,7 +29,6 @@ class NewItemViewViewModel: ObservableObject {
         guard dueDate >= Date().addingTimeInterval(-86400) else {
             return false
         }
-        // При необходимости добавить проверку repeatEndDate >= dueDate
         if repeatRule != .none, let repeatEnd = repeatEndDate {
             if repeatEnd < dueDate {
                 return false
@@ -36,43 +36,45 @@ class NewItemViewViewModel: ObservableObject {
         }
         return true
     }
-    
-    func save() {
+
+    func save() async {
         guard canSave else {
             showAlert = true
             return
         }
 
         guard let uID = Auth.auth().currentUser?.uid else {
+            errorMessage = "User not logged in"
+            state = .error(errorMessage)
             return
         }
 
-        let newId = UUID().uuidString
-        let tagList = tags
-            .split(separator: ",")
-            .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
-            .filter { !$0.isEmpty }
+        state = .loading
+        do {
+            let newId = UUID().uuidString
+            let tagList = tags
+                .split(separator: ",")
+                .map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
 
-        let newItem = GoalListItem(
-            id: newId,
-            title: title,
-            dueDate: dueDate.timeIntervalSince1970,
-            createdDate: Date().timeIntervalSince1970,
-            isDone: false,
-            note: note.isEmpty ? nil : note,
-            priority: priority,
-            subGoals: nil,           // обязательно до tags
-            tags: tagList,           // после subGoals
-            repeatRule: repeatRule,
-            repeatEndDate: repeatEndDate?.timeIntervalSince1970
-        )
+            let newItem = GoalListItem(
+                id: newId,
+                title: title,
+                dueDate: dueDate.timeIntervalSince1970,
+                createdDate: Date().timeIntervalSince1970,
+                isDone: false,
+                note: note.isEmpty ? nil : note,
+                priority: priority,
+                subGoals: nil,
+                tags: tagList,
+                repeatRule: repeatRule,
+                repeatEndDate: repeatEndDate?.timeIntervalSince1970
+            )
 
-        
-        let db = Firestore.firestore()
-        db.collection("users")
-            .document(uID)
-            .collection("goals")
-            .document(newId)
-            .setData(newItem.asDictionary())
+            try await FirebaseService.shared.saveGoal(userId: uID, goal: newItem)
+            state = .loaded
+        } catch {
+            errorMessage = "Failed to save goal"
+            state = .error(errorMessage)
+        }
     }
 }

@@ -6,6 +6,7 @@
 //
 import Foundation
 
+@MainActor
 class GoalListItemViewViewModel: ObservableObject {
     private let parentViewModel: GoalListViewViewModel
     
@@ -13,15 +14,15 @@ class GoalListItemViewViewModel: ObservableObject {
         self.parentViewModel = parentViewModel
     }
     
-    func toggleIsDone(item: GoalListItem) {
-        parentViewModel.toggleIsDone(item: item)
+    func toggleIsDone(item: GoalListItem) async {
+        await parentViewModel.toggleIsDone(item: item)
     }
     
-    func toggleSubGoalDone(parent: GoalListItem, subGoal: GoalListItem.SubGoal) {
-        parentViewModel.toggleSubGoalDone(parent: parent, subGoal: subGoal)
+    func toggleSubGoalDone(parent: GoalListItem, subGoal: GoalListItem.SubGoal) async {
+        await parentViewModel.toggleSubGoalDone(parent: parent, subGoal: subGoal)
     }
     
-    func editGoalTitle(item: GoalListItem, newTitle: String) {
-        parentViewModel.updateGoalTitle(item: item, newTitle: newTitle)
+    func editGoalTitle(item: GoalListItem, newTitle: String) async {
+        await parentViewModel.updateGoalTitle(item: item, newTitle: newTitle)
     }
 }

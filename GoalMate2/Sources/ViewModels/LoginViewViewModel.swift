@@ -4,43 +4,50 @@
 //
 //  Created by Алуа Жолдыкан on 28.05.2025.
 //
+
 import FirebaseAuth
 import Foundation
 
+@MainActor
 class LoginViewViewModel: ObservableObject {
     @Published var email = ""
     @Published var password = ""
     @Published var errorMessage = ""
+    @Published var state: DataState = .loaded
     
-    init() {}
-    
-    func login() {
-        guard validate() else {
-            return
-        }
+    func login() async {
+        guard validate() else { return }
         
-        Auth.auth().signIn(withEmail: email, password: password) { [weak self] authResult, error in
-            guard let self = self else { return }
-            
-            if let error = error {
-                self.errorMessage = "Invalid email or password"
-                // You can be more specific with different error cases if you want
-                // For example:
-                /*
-                if let errCode = AuthErrorCode.Code(rawValue: error._code) {
-                    switch errCode {
-                    case .wrongPassword:
-                        self.errorMessage = "Wrong password"
-                    case .userNotFound:
-                        self.errorMessage = "User not found"
-                    default:
-                        self.errorMessage = "Login error: \(error.localizedDescription)"
-                    }
-                }
-                */
-            }
+        state = .loading
+        do {
+            try await FirebaseService.shared.loginUser(email: email, password: password)
+            state = .loaded
+        } catch {
+            handleLoginError(error)
+            state = .error(errorMessage)
         }
     }
+    
+    private func handleLoginError(_ error: Error) {
+        if let authError = error as NSError?,
+           let code = AuthErrorCode(rawValue: authError.code) {
+            switch code {
+            case .wrongPassword:
+                errorMessage = "Wrong password"
+            case .userNotFound:
+                errorMessage = "User not found"
+            case .userDisabled:
+                errorMessage = "Account disabled"
+            case .invalidEmail:
+                errorMessage = "Invalid email format"
+            default:
+                errorMessage = "Login error: \(error.localizedDescription)"
+            }
+        } else {
+            errorMessage = "Login failed. Please try again."
+        }
+    }
+
     
     private func validate() -> Bool {
         errorMessage = ""
@@ -49,10 +56,12 @@ class LoginViewViewModel: ObservableObject {
             errorMessage = "Please fill in all fields"
             return false
         }
+        
         guard email.contains("@") && email.contains(".") else {
             errorMessage = "Please enter a valid email."
             return false
         }
+        
         return true
     }
 }

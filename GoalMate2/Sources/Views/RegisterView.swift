@@ -36,10 +36,10 @@ struct RegisterView: View {
                 TLButton(
                     title: "Create Account",
                     background: .green
-                )
-                {
-                    // Attemp to registration
-                    viewModel.register()
+                ) {
+                    Task {
+                        await viewModel.register()
+                    }
                 }
                 .padding()
             }

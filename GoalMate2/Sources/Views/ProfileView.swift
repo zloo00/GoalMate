@@ -21,8 +21,10 @@ struct ProfileView: View {
             }
             .navigationTitle("Profile")
         }
-        .onAppear{
-            viewModel.fetchUser()
+        .onAppear {
+            Task {
+                await viewModel.fetchUser()
+            }
         }
     }
     

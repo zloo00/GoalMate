@@ -5,34 +5,40 @@
 //  Created by Алуа Жолдыкан on 28.05.2025.
 //
 import FirebaseAuth
-import FirebaseFirestore
 import Foundation
-class ProfileViewViewModel: ObservableObject{
-    init(){
-        
-    }
-    @Published var user: User? = nil
-    func fetchUser(){
-        guard let userId = Auth.auth().currentUser?.uid else { return }
-        let db = Firestore.firestore()
-        db.collection("users").document(userId).getDocument{ [weak self]snapshot, error in
-            guard let data = snapshot?.data(), error == nil else { return }
-            DispatchQueue.main.async {
-                self?.user = User(
-                    id: data["id"] as? String ?? "",
-                    name: data["name"] as? String ?? "",
-                    email: data["email"] as? String ?? "",
-                    joined: data["joined"] as? TimeInterval ?? 0)
-            }
-            
+
+@MainActor
+class ProfileViewViewModel: ObservableObject {
+    @Published var user: User?
+    @Published var errorMessage = ""
+    @Published var state: DataState = .loaded
+    
+    func fetchUser() async {
+        guard let userId = Auth.auth().currentUser?.uid else {
+            errorMessage = "No authenticated user"
+            state = .error(errorMessage)
+            return
         }
-    }
-    func logOut(){
+
+        state = .loading
+
         do {
-            try Auth.auth().signOut()
-        } catch{
-            print(error)
+            user = try await FirebaseService.shared.fetchUser(userId: userId)
+            state = user == nil ? .empty : .loaded
+        } catch {
+            errorMessage = "Failed to fetch user data"
+            state = .error(errorMessage)
         }
-        
+    }
+    
+    func logOut() {
+        do {
+            try FirebaseService.shared.logout()
+            user = nil
+            state = .loaded
+        } catch {
+            errorMessage = "Logout failed"
+            state = .error(errorMessage)
+        }
     }
 }
