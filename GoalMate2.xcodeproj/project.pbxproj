@@ -36,25 +36,33 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		8D0259E12DEC2BB400F89407 /* Exceptions for "GoalMate2" folder in "Tests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Tests/GoalListViewViewModelTests.swift,
+				Tests/MockGoalListViewViewModel.swift,
+				Tests/Tests.swift,
+			);
+			target = 8D1EB2442DE8801B004CE60A /* Tests */;
+		};
 		8D513E362DE9B70800F83575 /* Exceptions for "GoalMate2" folder in "GoalMate2" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
+				Tests/GoalListViewViewModelTests.swift,
+				Tests/MockGoalListViewViewModel.swift,
+				Tests/Tests.swift,
 			);
 			target = 8D4CD5A52DE61C8A003B6ED5 /* GoalMate2 */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		8D1EB2462DE8801B004CE60A /* Tests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Tests;
-			sourceTree = "<group>";
-		};
 		8D4CD5A82DE61C8A003B6ED5 /* GoalMate2 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				8D513E362DE9B70800F83575 /* Exceptions for "GoalMate2" folder in "GoalMate2" target */,
+				8D0259E12DEC2BB400F89407 /* Exceptions for "GoalMate2" folder in "Tests" target */,
 			);
 			path = GoalMate2;
 			sourceTree = "<group>";
@@ -92,7 +100,6 @@
 		8D4CD59D2DE61C8A003B6ED5 = {
 			isa = PBXGroup;
 			children = (
-				8D1EB2462DE8801B004CE60A /* Tests */,
 				8D4CD5A72DE61C8A003B6ED5 /* Products */,
 				8D4CD5A82DE61C8A003B6ED5 /* GoalMate2 */,
 			);
@@ -143,9 +150,6 @@
 			);
 			dependencies = (
 				8D1EB24A2DE8801B004CE60A /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				8D1EB2462DE8801B004CE60A /* Tests */,
 			);
 			name = Tests;
 			packageProductDependencies = (
@@ -482,7 +486,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"GoalMate2/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"GoalMate2/Sources/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = 25V88933DU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -515,7 +519,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"GoalMate2/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"GoalMate2/Sources/Resources/Preview Content\"";
 				DEVELOPMENT_TEAM = 25V88933DU;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
