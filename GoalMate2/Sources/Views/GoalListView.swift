@@ -66,8 +66,7 @@ struct GoalListView: View {
         NavigationView {
             VStack(spacing: 16) {
                 DailyQuoteView()
-                
-                // Sorting dropdown button
+
                 HStack {
                     Menu {
                         ForEach(SortOption.allCases, id: \.self) { option in
@@ -114,7 +113,7 @@ struct GoalListView: View {
                 
                 if sortedGoals.isEmpty {
                     Spacer()
-                    Text("Set your goal")
+                    Text("🔥 Set your goal! 🔥")
                         .font(.title2)
                         .foregroundColor(.gray)
                         .italic()

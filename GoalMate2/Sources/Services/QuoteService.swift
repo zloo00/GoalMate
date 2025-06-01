@@ -12,11 +12,12 @@ class QuoteService {
     private let url = URL(string: "https://zenquotes.io/api/random")!
 
     func fetchQuote(completion: @escaping (Quote?) -> Void) {
-        URLSession.shared.dataTask(with: url) { data, _, error in
+        let task = URLSession.shared.dataTask(with: url) { data, _, error in
             guard let data = data, error == nil else {
                 completion(nil)
                 return
             }
+
             do {
                 let quotes = try JSONDecoder().decode([Quote].self, from: data)
                 completion(quotes.first)
@@ -24,6 +25,9 @@ class QuoteService {
                 print("Quote decoding error: \(error)")
                 completion(nil)
             }
-        }.resume()
+        }
+
+        task.resume()
     }
 }
+

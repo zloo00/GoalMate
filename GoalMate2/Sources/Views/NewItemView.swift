@@ -15,7 +15,7 @@ struct NewItemView: View {
 
     var body: some View {
         VStack {
-            Text("New Item")
+            Text("New Goal")
                 .font(.system(size: 32))
                 .bold()
                 .padding(.top, 40)

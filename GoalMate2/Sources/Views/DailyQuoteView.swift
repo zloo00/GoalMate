@@ -11,48 +11,57 @@ struct DailyQuoteView: View {
     @StateObject private var viewModel = QuoteViewModel()
 
     var body: some View {
-        ZStack {
-            LinearGradient(
-                gradient: Gradient(colors: [Color.orange, Color.red.opacity(0.8)]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .cornerRadius(20)
-            .shadow(color: .black.opacity(0.3), radius: 10, x: 0, y: 5)
+        VStack {
+            ZStack {
+                LinearGradient(
+                    gradient: Gradient(colors: [Color.orange, Color.red.opacity(0.8)]),
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .cornerRadius(16)
+                .shadow(color: .black.opacity(0.2), radius: 6, x: 0, y: 4)
 
-            VStack(spacing: 12) {
-                Text("🔥 Motivation Boost 🔥")
-                    .font(.headline)
-                    .foregroundColor(.white)
-
-                content
-
-                Button(action: {
-                    viewModel.loadQuote()
-                }) {
-                    Text("🔄 Update Quote")
-                        .font(.caption)
+                VStack(spacing: 10) {
+                    Text("🔥 Motivation Boost 🔥")
+                        .font(.headline)
                         .foregroundColor(.white)
-                        .padding(.top, 4)
-                }
 
-                Text("💪🌟 Keep going!")
-                    .font(.caption2)
-                    .foregroundColor(.white.opacity(0.8))
+                    content
+
+                    if viewModel.shouldShowButton {
+                        Button(action: {
+                            viewModel.loadQuote()
+                        }) {
+                            Text("💡 Get motivated")
+                                .font(.caption)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(Color.black.opacity(0.25))
+                                .cornerRadius(10)
+                        }
+                        .transition(.opacity)
+                    }
+                }
+                .padding(14)
+                .frame(maxWidth: 300)
             }
-            .padding()
+            .frame(height: 150) // 🔽 Здесь можно менять высоту (например, 180, 150)
+
         }
         .padding(.horizontal)
-        .frame(maxWidth: .infinity)
         .onAppear {
-            viewModel.loadQuote()
+            viewModel.checkStoredQuote()
         }
     }
 
     @ViewBuilder
     private var content: some View {
         switch viewModel.state {
-        case .idle, .loading:
+        case .idle:
+            EmptyView()
+
+        case .loading:
             ProgressView()
                 .progressViewStyle(CircularProgressViewStyle(tint: .white))
 
@@ -63,7 +72,8 @@ struct DailyQuoteView: View {
                     .italic()
                     .foregroundColor(.white)
                     .multilineTextAlignment(.center)
-                    .padding(.horizontal)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 6)
 
                 Text("- \(quote.a)")
                     .font(.caption)
@@ -71,7 +81,7 @@ struct DailyQuoteView: View {
             }
 
         case .empty:
-            Text("Quote is empty. Try again.")
+            Text("No quote. Try again later.")
                 .foregroundColor(.white)
                 .multilineTextAlignment(.center)
                 .padding()
