@@ -42,15 +42,23 @@ struct GoalListView: View {
         switch selectedSortOption {
         case .priority:
             return viewModel.goals.sorted {
-                if $0.priority == $1.priority {
-                    return $0.title < $1.title
+                let priorityOrder: [GoalListItem.Priority] = [.high, .medium, .low]
+                let priorityIndex0 = priorityOrder.firstIndex(of: $0.priority) ?? 0
+                let priorityIndex1 = priorityOrder.firstIndex(of: $1.priority) ?? 0
+                
+                if priorityIndex0 != priorityIndex1 {
+                    return priorityIndex0 < priorityIndex1
                 }
-                return $0.priority.rawValue > $1.priority.rawValue
+                return $0.title < $1.title
             }
         case .alphabetical:
             return viewModel.goals.sorted { $0.title < $1.title }
         case .deadline:
-            return viewModel.goals.sorted { $0.dueDate < $1.dueDate }
+            return viewModel.goals.sorted {
+                let date1 = $0.repeatEndDate ?? $0.dueDate
+                let date2 = $1.repeatEndDate ?? $1.dueDate
+                return date1 < date2
+            }
         }
     }
     
