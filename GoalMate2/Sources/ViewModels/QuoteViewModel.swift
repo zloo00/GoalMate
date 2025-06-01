@@ -38,7 +38,7 @@ class QuoteViewModel: ObservableObject {
                         self.shouldShowButton = false
                     }
                 } else {
-                    self.state = .error("Не удалось загрузить цитату. Проверь соединение.")
+                    self.state = .error("Quote is not loaded. Check your connection.")
                 }
             }
         }

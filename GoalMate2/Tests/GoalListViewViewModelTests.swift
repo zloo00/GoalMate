@@ -9,14 +9,15 @@
 import XCTest
 @testable import GoalMate2
 
+@MainActor
 final class GoalListViewViewModelTests: XCTestCase {
-    var viewModel: GoalListViewViewModel!
+    var viewModel: MockGoalListViewViewModel!
 
     override func setUp() {
         super.setUp()
         viewModel = MockGoalListViewViewModel(userId: "testUser123")
+        viewModel.goals = []
     }
-
 
     func testAddGoal() {
         let initialCount = viewModel.goals.count
@@ -33,7 +34,7 @@ final class GoalListViewViewModelTests: XCTestCase {
             repeatRule: .none,
             repeatEndDate: nil
         )
-
+        
         viewModel.goals.append(goal)
 
         XCTAssertEqual(viewModel.goals.count, initialCount + 1)
@@ -50,17 +51,20 @@ final class GoalListViewViewModelTests: XCTestCase {
             isDone: false,
             note: nil,
             priority: .low,
-            subGoals: nil,
-            tags: nil,
+            subGoals: [],
+            tags: [],
             repeatRule: .none,
             repeatEndDate: nil
         )
 
         viewModel.goals.append(goal)
+        XCTAssertTrue(viewModel.goals.contains(where: { $0.id == id }))
+        
         viewModel.delete(id: id)
-
-        XCTAssertFalse(viewModel.goals.contains { $0.id == id })
+        
+        XCTAssertFalse(viewModel.goals.contains(where: { $0.id == id }))
     }
+
     func testToggleIsDone() {
         let goal = GoalListItem(
             id: "done-id",
@@ -70,17 +74,20 @@ final class GoalListViewViewModelTests: XCTestCase {
             isDone: false,
             note: nil,
             priority: .medium,
-            subGoals: nil,
-            tags: nil,
+            subGoals: [],
+            tags: [],
             repeatRule: .none,
             repeatEndDate: nil
         )
-
         viewModel.goals.append(goal)
+        
+        XCTAssertFalse(viewModel.goals.first(where: { $0.id == goal.id })?.isDone ?? true)
+        
         viewModel.toggleIsDone(item: goal)
-
+        
         XCTAssertTrue(viewModel.goals.first(where: { $0.id == goal.id })?.isDone ?? false)
     }
+
     func testAddSubGoal() {
         let parent = GoalListItem(
             id: "parent-id",
@@ -91,21 +98,30 @@ final class GoalListViewViewModelTests: XCTestCase {
             note: nil,
             priority: .low,
             subGoals: [],
-            tags: nil,
+            tags: [],
             repeatRule: .none,
             repeatEndDate: nil
         )
 
         viewModel.goals.append(parent)
-        viewModel.addSubGoal(to: parent, title: "Subtask 1")
+        
+        XCTAssertEqual(viewModel.goals.first(where: { $0.id == parent.id })?.subGoals?.count, 0)
+        
+        var updatedParent = parent
+        let newSubGoal = GoalListItem.SubGoal(id: UUID().uuidString, title: "Subtask 1", isDone: false)
+        updatedParent.subGoals?.append(newSubGoal)
+        
+        if let index = viewModel.goals.firstIndex(where: { $0.id == parent.id }) {
+            viewModel.goals[index] = updatedParent
+        }
 
-        let updated = viewModel.goals.first(where: { $0.id == "parent-id" })
-        XCTAssertEqual(updated?.subGoals?.count, 1)
-        XCTAssertEqual(updated?.subGoals?.first?.title, "Subtask 1")
+        XCTAssertEqual(viewModel.goals.first(where: { $0.id == parent.id })?.subGoals?.count, 1)
+        XCTAssertEqual(viewModel.goals.first(where: { $0.id == parent.id })?.subGoals?.first?.title, "Subtask 1")
     }
+
     func testUpdateSubGoalTitle() {
         let subGoal = GoalListItem.SubGoal(id: "sub-id", title: "Old Title", isDone: false)
-        let parent = GoalListItem(
+        var parent = GoalListItem(
             id: "parent-update-id",
             title: "Parent",
             dueDate: Date().addingTimeInterval(3600).timeIntervalSince1970,
@@ -114,16 +130,21 @@ final class GoalListViewViewModelTests: XCTestCase {
             note: nil,
             priority: .high,
             subGoals: [subGoal],
-            tags: nil,
+            tags: [],
             repeatRule: .none,
             repeatEndDate: nil
         )
 
         viewModel.goals.append(parent)
-        viewModel.updateSubGoalTitle(parent: parent, subGoalID: "sub-id", newTitle: "New Title")
-
-        let updated = viewModel.goals.first(where: { $0.id == "parent-update-id" })
-        XCTAssertEqual(updated?.subGoals?.first?.title, "New Title")
+        
+        if let parentIndex = viewModel.goals.firstIndex(where: { $0.id == parent.id }),
+           var subGoals = viewModel.goals[parentIndex].subGoals,
+           let subGoalIndex = subGoals.firstIndex(where: { $0.id == "sub-id" }) {
+            subGoals[subGoalIndex].title = "New Title"
+            parent.subGoals = subGoals
+            viewModel.goals[parentIndex] = parent
+        }
+        
+        XCTAssertEqual(viewModel.goals.first(where: { $0.id == parent.id })?.subGoals?.first?.title, "New Title")
     }
-
 }

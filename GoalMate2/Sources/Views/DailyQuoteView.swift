@@ -46,7 +46,7 @@ struct DailyQuoteView: View {
                 .padding(14)
                 .frame(maxWidth: 300)
             }
-            .frame(height: 150) // 🔽 Здесь можно менять высоту (например, 180, 150)
+            .frame(height: 150)
 
         }
         .padding(.horizontal)
