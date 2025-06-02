@@ -165,9 +165,8 @@ struct GoalListView: View {
                         Image(systemName: "arkit")
                     }
                     .sheet(isPresented: $showingARView) {
-                        ARViewScreen()
-                    }
-                }
+                        ARViewScreen(viewModel: viewModel)
+                    }}
             }
             .sheet(isPresented: $viewModel.showingNewItemView) {
                 NewItemView(newItemPresented: $viewModel.showingNewItemView)
