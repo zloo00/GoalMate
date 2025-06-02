@@ -121,25 +121,36 @@ class FirebaseService {
         try await updateGoal(userId: userId, goal: updatedGoal)
     }
     
+    // В FirebaseService
     func toggleSubGoalCompletion(userId: String, parentGoal: GoalListItem, subGoal: GoalListItem.SubGoal) async throws -> GoalListItem {
         var updatedGoal = parentGoal
         guard var subGoals = updatedGoal.subGoals else { return parentGoal }
         
         if let index = subGoals.firstIndex(where: { $0.id == subGoal.id }) {
+            // Сначала обновляем локально
             subGoals[index].isDone.toggle()
             updatedGoal.subGoals = subGoals
             
-            try await Firestore.firestore()
-                .collection("users")
-                .document(userId)
-                .collection("goals")
-                .document(parentGoal.id)
-                .updateData([
-                    "subGoals": subGoals.map { $0.asDictionary() }
-                ])
+            // Затем синхронизируем с Firebase
+            do {
+                try await Firestore.firestore()
+                    .collection("users")
+                    .document(userId)
+                    .collection("goals")
+                    .document(parentGoal.id)
+                    .updateData([
+                        "subGoals": subGoals.map { $0.asDictionary() }
+                    ])
+                
+                return updatedGoal
+            } catch {
+                // Если ошибка - возвращаем исходное состояние
+                subGoals[index].isDone.toggle()
+                throw error
+            }
         }
         
-        return updatedGoal
+        return parentGoal
     }
     
     func updateGoalTitle(userId: String, goalId: String, newTitle: String) async throws {

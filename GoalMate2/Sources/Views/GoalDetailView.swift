@@ -203,7 +203,8 @@ struct GoalDetailView: View {
                             .contextMenu {
                                 Button(role: .destructive) {
                                     if let index = subGoals.firstIndex(where: { $0.id == sub.id }) {
-                                        viewModel.deleteSubGoal(at: IndexSet(integer: index), parent: goal)
+                                        indexSetToDelete = IndexSet(integer: index)
+                                        showDeleteConfirmation = true
                                     }
                                 } label: {
                                     Label("Delete", systemImage: "trash")
