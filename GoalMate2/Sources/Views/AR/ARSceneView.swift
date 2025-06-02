@@ -4,6 +4,7 @@
 //
 //  Created by Алуа Жолдыкан on 02.06.2025.
 //
+
 import SwiftUI
 import ARKit
 import SceneKit
@@ -30,7 +31,7 @@ struct ARSceneView: UIViewRepresentable {
         sceneView.addGestureRecognizer(tapGesture)
 
         context.coordinator.sceneView = sceneView
-        context.coordinator.addGoalSpheres()
+        context.coordinator.addGoalSpheres(to: sceneView)
 
         return sceneView
     }
@@ -54,37 +55,63 @@ struct ARSceneView: UIViewRepresentable {
             sceneView?.scene.rootNode.childNodes.filter { $0.name?.starts(with: "goal_") == true }.forEach {
                 $0.removeFromParentNode()
             }
-            addGoalSpheres()
+            if let sceneView = sceneView {
+                addGoalSpheres(to: sceneView)
+            }
         }
 
-        func addGoalSpheres() {
-            guard let sceneView else { return }
+        func addGoalSpheres(to sceneView: ARSCNView) {
+            let sortedGoals = goals.sorted { $0.dueDate < $1.dueDate }
 
-            for (index, goal) in goals.enumerated() {
+            for (index, goal) in sortedGoals.enumerated() {
                 let sphere = SCNSphere(radius: 0.05)
-                let material = SCNMaterial()
-                material.diffuse.contents = {
-                    switch goal.priority {
-                    case .high: return UIColor.red
-                    case .medium: return UIColor.orange
-                    case .low: return UIColor.green
-                    }
-                }()
-                sphere.materials = [material]
+                let color: UIColor
+
+                switch goal.priority {
+                case .high: color = .systemRed
+                case .medium: color = .systemOrange
+                case .low: color = .systemGreen
+                }
+
+                sphere.firstMaterial?.diffuse.contents = color
 
                 let node = SCNNode(geometry: sphere)
-                node.name = "goal_\(goal.id)"
+                node.name = "goal_\(goal.id)" // ✅ Используем ID цели
                 node.position = SCNVector3(Float(index) * 0.2, 0, -0.5 - Float(index) * 0.1)
 
+                // Анимация появления
                 node.scale = SCNVector3(0.01, 0.01, 0.01)
                 let scaleUp = SCNAction.scale(to: 1.0, duration: 0.5)
                 scaleUp.timingMode = .easeOut
 
+                // Плавающая анимация
                 let moveUp = SCNAction.moveBy(x: 0, y: 0.05, z: 0, duration: 1.5)
                 let moveDown = SCNAction.moveBy(x: 0, y: -0.05, z: 0, duration: 1.5)
-                let float = SCNAction.repeatForever(SCNAction.sequence([moveUp, moveDown]))
+                let floatSequence = SCNAction.sequence([moveUp, moveDown])
+                let floating = SCNAction.repeatForever(floatSequence)
 
-                node.runAction(SCNAction.sequence([scaleUp, float]))
+                node.runAction(SCNAction.sequence([scaleUp, floating]))
+
+                // ✅ Текст под сферой
+                let maxLength = 20
+                let title = goal.title.count > maxLength ? String(goal.title.prefix(maxLength)) + "…" : goal.title
+
+                let textGeometry = SCNText(string: title, extrusionDepth: 0.5)
+                textGeometry.firstMaterial?.diffuse.contents = UIColor.white
+                textGeometry.font = UIFont.systemFont(ofSize: 4)
+                textGeometry.flatness = 0.1
+
+                let textNode = SCNNode(geometry: textGeometry)
+                textNode.scale = SCNVector3(0.003, 0.003, 0.003)
+
+                let (min, max) = textGeometry.boundingBox
+                let textWidth = max.x - min.x
+                textNode.position = SCNVector3(-textWidth * 0.0015, -0.07, 0)
+
+                // Billboard — текст всегда повёрнут к камере
+                textNode.constraints = [SCNBillboardConstraint()]
+
+                node.addChildNode(textNode)
                 sceneView.scene.rootNode.addChildNode(node)
             }
         }
