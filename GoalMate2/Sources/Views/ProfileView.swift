@@ -9,17 +9,23 @@ import SwiftUI
 
 struct ProfileView: View {
     @StateObject var viewModel = ProfileViewViewModel()
-     
+    
     var body: some View {
         NavigationView {
-            VStack {
-                if let user = viewModel.user {
-                   profile(user: user)
-                } else {
-                    Text("Loading Profile...")
+            ScrollView {
+                VStack {
+                    if let user = viewModel.user {
+                        profile(user: user)
+                    } else {
+                        ProgressView("Loading Profile...")
+                            .padding(.top, 50)
+                    }
                 }
+                .padding(.top, 20)
             }
             .navigationTitle("Profile")
+            .navigationBarTitleDisplayMode(.inline)
+            .background(Color(.systemGroupedBackground).edgesIgnoringSafeArea(.all))
         }
         .onAppear {
             Task {
@@ -30,43 +36,79 @@ struct ProfileView: View {
     
     @ViewBuilder
     func profile(user: User) -> some View {
-        // Avatar
-        Image(systemName: "person.circle")
-            .resizable()
-            .aspectRatio(contentMode: .fit)
-            .foregroundColor(Color.blue)
-            .frame(width: 125, height: 125)
-            .padding()
+        VStack(spacing: 20) {
+            ZStack {
+                Circle()
+                    .fill(LinearGradient(
+                        gradient: Gradient(colors: [Color.blue.opacity(0.3), Color.purple.opacity(0.3)]),
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing))
+                    .frame(width: 150, height: 150)
+                    .shadow(color: Color.blue.opacity(0.2), radius: 10, x: 0, y: 5)
                 
-        // Info: Name, Email, Member since
-        VStack(alignment: .leading) {
-            HStack {
-                Text("Name: ")
-                    .bold()
-                Text(user.name)
+                Image(systemName: "person.circle.fill")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .foregroundColor(.white)
+                    .frame(width: 140, height: 140)
+                    .background(
+                        Circle()
+                            .fill(LinearGradient(
+                                gradient: Gradient(colors: [Color.orange, Color.red]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing))
+                    )
+            }
+            .padding(.vertical, 20)
+            
+            VStack(alignment: .leading, spacing: 16) {
+                infoRow(label: "Name", value: user.name)
+                Divider()
+                infoRow(label: "Email", value: user.email)
+                Divider()
+                infoRow(label: "Member Since",
+                       value: "\(Date(timeIntervalSince1970: user.joined).formatted(date: .abbreviated, time: .shortened))")
             }
             .padding()
-            HStack {
-                Text("Email: ")
-                    .bold()
-                Text(user.email)
+            .background(Color(.systemBackground))
+            .cornerRadius(12)
+            .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+            .padding(.horizontal)
+            
+            Button(action: {
+                viewModel.logOut()
+            }) {
+                HStack {
+                    Spacer()
+                    Text("Log Out")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                    Spacer()
+                }
+                .padding()
+                .background(Color.red)
+                .cornerRadius(10)
+                .shadow(color: Color.red.opacity(0.3), radius: 5, x: 0, y: 2)
             }
-            .padding()
-            HStack {
-                Text("Member Since: ")
-                    .bold()
-                Text("\(Date(timeIntervalSince1970: user.joined).formatted(date: .abbreviated, time: .shortened))")
-            }
-            .padding()
+            .padding(.horizontal, 40)
+            .padding(.top, 20)
+            
+            Spacer()
         }
-        .padding()
-        // Sign Out
-        Button("Log Out") {
-            viewModel.logOut()
+    }
+    
+    @ViewBuilder
+    private func infoRow(label: String, value: String) -> some View {
+        HStack(alignment: .top) {
+            Text(label + ":")
+                .font(.subheadline)
+                .foregroundColor(.gray)
+                .frame(width: 100, alignment: .leading)
+            
+            Text(value)
+                .font(.body)
+                .foregroundColor(.primary)
         }
-        .tint(.red)
-        .padding()
-        Spacer()
     }
 }
 
