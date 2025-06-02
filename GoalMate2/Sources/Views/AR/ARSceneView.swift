@@ -10,56 +10,103 @@ import SceneKit
 
 struct ARSceneView: UIViewRepresentable {
     var goals: [GoalListItem]
+    var onGoalSelected: (GoalListItem) -> Void
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
 
     func makeUIView(context: Context) -> ARSCNView {
         let sceneView = ARSCNView()
+        sceneView.delegate = context.coordinator
         sceneView.autoenablesDefaultLighting = true
         sceneView.scene = SCNScene()
 
-        let configuration = ARWorldTrackingConfiguration()
-        sceneView.session.run(configuration)
+        let config = ARWorldTrackingConfiguration()
+        config.planeDetection = [.horizontal]
+        sceneView.session.run(config)
 
-        addGoalSpheres(to: sceneView)
+        let tapGesture = UITapGestureRecognizer(target: context.coordinator, action: #selector(Coordinator.handleTap(_:)))
+        sceneView.addGestureRecognizer(tapGesture)
+
+        context.coordinator.sceneView = sceneView
+        context.coordinator.addGoalSpheres()
 
         return sceneView
     }
 
     func updateUIView(_ uiView: ARSCNView, context: Context) {
-        // Очистим сцену перед повторной отрисовкой
-        uiView.scene.rootNode.childNodes.forEach { $0.removeFromParentNode() }
-        addGoalSpheres(to: uiView)
+        context.coordinator.goals = goals
+        context.coordinator.refreshGoals()
     }
 
-    private func addGoalSpheres(to sceneView: ARSCNView) {
-        // Сортируем по dueDate
-        let sortedGoals = goals.sorted { $0.dueDate < $1.dueDate }
+    class Coordinator: NSObject, ARSCNViewDelegate {
+        var parent: ARSceneView
+        var sceneView: ARSCNView?
+        var goals: [GoalListItem]
 
-        for (index, goal) in sortedGoals.enumerated() {
-            let sphere = SCNSphere(radius: 0.05)
+        init(_ parent: ARSceneView) {
+            self.parent = parent
+            self.goals = parent.goals
+        }
 
-            switch goal.priority {
-            case .low:
-                sphere.firstMaterial?.diffuse.contents = UIColor.systemGreen
-            case .medium:
-                sphere.firstMaterial?.diffuse.contents = UIColor.systemYellow
-            case .high:
-                sphere.firstMaterial?.diffuse.contents = UIColor.systemRed
+        func refreshGoals() {
+            sceneView?.scene.rootNode.childNodes.filter { $0.name?.starts(with: "goal_") == true }.forEach {
+                $0.removeFromParentNode()
             }
+            addGoalSpheres()
+        }
 
-            let node = SCNNode(geometry: sphere)
-            node.position = SCNVector3(Float(index) * 0.2, 0, -0.5 - Float(index) * 0.1)
+        func addGoalSpheres() {
+            guard let sceneView else { return }
 
-            // Добавим текст
-            let text = SCNText(string: goal.title, extrusionDepth: 0.5)
-            text.font = UIFont.systemFont(ofSize: 2)
-            text.firstMaterial?.diffuse.contents = UIColor.white
+            for (index, goal) in goals.enumerated() {
+                let sphere = SCNSphere(radius: 0.05)
+                let material = SCNMaterial()
+                material.diffuse.contents = {
+                    switch goal.priority {
+                    case .high: return UIColor.red
+                    case .medium: return UIColor.orange
+                    case .low: return UIColor.green
+                    }
+                }()
+                sphere.materials = [material]
 
-            let textNode = SCNNode(geometry: text)
-            textNode.scale = SCNVector3(0.005, 0.005, 0.005)
-            textNode.position = SCNVector3(node.position.x - 0.05, node.position.y + 0.07, node.position.z)
+                let node = SCNNode(geometry: sphere)
+                node.name = "goal_\(goal.id)"
+                node.position = SCNVector3(Float(index) * 0.2, 0, -0.5 - Float(index) * 0.1)
 
-            sceneView.scene.rootNode.addChildNode(node)
-            sceneView.scene.rootNode.addChildNode(textNode)
+                node.scale = SCNVector3(0.01, 0.01, 0.01)
+                let scaleUp = SCNAction.scale(to: 1.0, duration: 0.5)
+                scaleUp.timingMode = .easeOut
+
+                let moveUp = SCNAction.moveBy(x: 0, y: 0.05, z: 0, duration: 1.5)
+                let moveDown = SCNAction.moveBy(x: 0, y: -0.05, z: 0, duration: 1.5)
+                let float = SCNAction.repeatForever(SCNAction.sequence([moveUp, moveDown]))
+
+                node.runAction(SCNAction.sequence([scaleUp, float]))
+                sceneView.scene.rootNode.addChildNode(node)
+            }
+        }
+
+        @objc func handleTap(_ gesture: UITapGestureRecognizer) {
+            guard let sceneView = gesture.view as? ARSCNView else { return }
+            let location = gesture.location(in: sceneView)
+            let hitResults = sceneView.hitTest(location, options: nil)
+
+            if let node = hitResults.first?.node,
+               let name = node.name,
+               name.starts(with: "goal_") {
+                let goalId = name.replacingOccurrences(of: "goal_", with: "")
+                if let goal = goals.first(where: { $0.id == goalId }) {
+                    let scaleDown = SCNAction.scale(to: 0.8, duration: 0.1)
+                    let scaleUp = SCNAction.scale(to: 1.0, duration: 0.3)
+                    scaleUp.timingMode = .easeOut
+                    node.runAction(SCNAction.sequence([scaleDown, scaleUp]))
+
+                    parent.onGoalSelected(goal)
+                }
+            }
         }
     }
 }
