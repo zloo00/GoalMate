@@ -12,7 +12,6 @@ class QuoteService {
     private let baseUrl = "https://zenquotes.io/api/random"
     
     func fetchQuote(completion: @escaping (Quote?) -> Void) {
-        // Изменено на let, так как components не изменяется
         let components = URLComponents(string: baseUrl)!
         
         var request = URLRequest(url: components.url!)
@@ -20,7 +19,6 @@ class QuoteService {
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         
         let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            // Улучшенная обработка ошибок
             if let error = error {
                 print("Network error: \(error.localizedDescription)")
                 DispatchQueue.main.async { completion(nil) }

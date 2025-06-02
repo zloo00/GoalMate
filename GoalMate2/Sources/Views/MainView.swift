@@ -12,7 +12,6 @@ struct MainView: View {
     var body: some View {
         
         if viewModel.isSignedIn, !viewModel.currentUserId.isEmpty {
-            // Signed In
             accountView
             
         }else {

@@ -16,13 +16,11 @@ struct LoginView: View {
     var body: some View {
         NavigationView {
             VStack {
-                // Header
                 HeaderView(title: "Goal Mate",
                            subtitle: "Get things done",
                            angle: -15,
                            background: .orange)
                 
-                // Login form
                 Form {
                     if !viewModel.errorMessage.isEmpty {
                         Text(viewModel.errorMessage)
@@ -32,7 +30,6 @@ struct LoginView: View {
                         .textFieldStyle(DefaultTextFieldStyle())
                         .autocapitalization(.none)
                     
-                    // Password field with visibility toggle
                     HStack {
                         if showPassword {
                             TextField("Password", text: $viewModel.password)
@@ -62,7 +59,6 @@ struct LoginView: View {
                 }
                 .offset(y: -50)
                 
-                // Create Account
                 VStack {
                     Text("New around here?")
                     

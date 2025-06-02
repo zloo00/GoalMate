@@ -23,9 +23,7 @@ struct GoalDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // Header Section
                 VStack(alignment: .leading, spacing: 12) {
-                    // Editable Goal Title
                     TextField("Goal Title", text: $editedTitle)
                         .font(.system(size: 28, weight: .bold))
                         .padding(.vertical, 8)
@@ -34,7 +32,6 @@ struct GoalDetailView: View {
                             viewModel.updateGoal(goal)
                         }
                     
-                    // Time Remaining Counter
                     VStack(alignment: .leading, spacing: 6) {
                         Text("TIME REMAINING")
                             .font(.caption)
@@ -53,7 +50,6 @@ struct GoalDetailView: View {
                     }
                     .padding(.vertical, 8)
                     
-                    // Progress Bar
                     VStack(alignment: .leading, spacing: 6) {
                         HStack {
                             Text("PROGRESS")
@@ -74,7 +70,6 @@ struct GoalDetailView: View {
                 }
                 .padding(.bottom, 8)
                 
-                // Dates Section
                 VStack(spacing: 12) {
                     HStack {
                         VStack(alignment: .leading, spacing: 4) {
@@ -95,19 +90,18 @@ struct GoalDetailView: View {
                         }
                     }
                     
-                    // Editable Deadline
-                    DatePicker("Change Deadline", selection: $editedDeadline, displayedComponents: .date)
+                    DatePicker("Change Deadline", selection: $editedDeadline, displayedComponents: [.date, .hourAndMinute])
                         .datePickerStyle(.compact)
                         .onChange(of: editedDeadline) { _, newValue in
-                            if newValue < Date().startOfDay {
-                                showAlert = true
-                                editedDeadline = Date().startOfDay
-                            } else {
-                                goal.repeatEndDate = newValue.timeIntervalSince1970
-                                viewModel.updateGoal(goal)
-                                updateTimeRemaining()
-                            }
-                        }
+                                                    if newValue < Date() {
+                                                        showAlert = true
+                                                        editedDeadline = Date()
+                                                    } else {
+                                                        goal.repeatEndDate = newValue.timeIntervalSince1970
+                                                        viewModel.updateGoal(goal)
+                                                        updateTimeRemaining()
+                                                    }
+                                                }
                         .alert(isPresented: $showAlert) {
                             Alert(
                                 title: Text("Invalid Deadline"),
@@ -119,8 +113,7 @@ struct GoalDetailView: View {
                 .background(Color(.systemBackground))
                 .cornerRadius(12)
                 .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
-                
-                // Priority & Repeat Rule
+
                 HStack {
                     HStack {
                         Image(systemName: "flag.fill")
@@ -144,7 +137,6 @@ struct GoalDetailView: View {
                 .cornerRadius(12)
                 .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
                 
-                // Toggle for goals without subgoals
                 if goal.subGoals?.isEmpty ?? true {
                     Toggle(isOn: Binding(
                         get: { goal.isDone },
@@ -163,7 +155,6 @@ struct GoalDetailView: View {
                     .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
                 }
                 
-                // Subgoals Section
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
                         Text("SUBGOALS")
@@ -219,7 +210,6 @@ struct GoalDetailView: View {
                             .padding(.vertical, 20)
                     }
                     
-                    // Add Subgoal
                     HStack {
                         TextField("New subgoal", text: $newSubGoalTitle)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
@@ -288,6 +278,12 @@ struct GoalDetailView: View {
     }
     
     // MARK: - Timer Functions
+    private func formattedDeadline() -> String {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .short
+            formatter.timeStyle = .short
+            return formatter.string(from: Date(timeIntervalSince1970: goal.repeatEndDate ?? goal.dueDate))
+        }
     
     private func startTimer() {
         timer?.invalidate()
@@ -327,9 +323,9 @@ struct GoalDetailView: View {
         let now = Date()
         let timeLeft = deadlineDate.timeIntervalSince(now)
         
-        if timeLeft < 86400 { // Less than 24 hours
+        if timeLeft < 86400 {
             return .red
-        } else if timeLeft < 259200 { // Less than 3 days
+        } else if timeLeft < 259200 { 
             return .orange
         } else {
             return .blue

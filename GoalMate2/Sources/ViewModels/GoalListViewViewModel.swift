@@ -65,22 +65,17 @@ class GoalListViewViewModel: ObservableObject {
         }
     }
     
-    // В GoalListViewViewModel
     func toggleSubGoalDone(parent: GoalListItem, subGoal: GoalListItem.SubGoal) {
-        // Сначала обновляем локально
         if let index = goals.firstIndex(where: { $0.id == parent.id }),
            var subGoals = goals[index].subGoals,
            let subIndex = subGoals.firstIndex(where: { $0.id == subGoal.id }) {
             
-            // Локальное обновление
             subGoals[subIndex].isDone.toggle()
             goals[index].subGoals = subGoals
             
-            // Обновляем UI
             objectWillChange.send()
         }
         
-        // Затем синхронизируем с Firebase
         Task {
             errorMessage = ""
             state = .loading
@@ -91,14 +86,12 @@ class GoalListViewViewModel: ObservableObject {
                     subGoal: subGoal
                 )
                 
-                // Обновляем данные из Firebase (на случай, если были другие изменения)
                 if let index = goals.firstIndex(where: { $0.id == parent.id }) {
                     goals[index] = updatedGoal
                 }
                 
                 state = .loaded
             } catch {
-                // Откатываем изменения при ошибке
                 if let index = goals.firstIndex(where: { $0.id == parent.id }),
                    var subGoals = goals[index].subGoals,
                    let subIndex = subGoals.firstIndex(where: { $0.id == subGoal.id }) {

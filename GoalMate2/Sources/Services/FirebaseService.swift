@@ -121,17 +121,14 @@ class FirebaseService {
         try await updateGoal(userId: userId, goal: updatedGoal)
     }
     
-    // В FirebaseService
     func toggleSubGoalCompletion(userId: String, parentGoal: GoalListItem, subGoal: GoalListItem.SubGoal) async throws -> GoalListItem {
         var updatedGoal = parentGoal
         guard var subGoals = updatedGoal.subGoals else { return parentGoal }
         
         if let index = subGoals.firstIndex(where: { $0.id == subGoal.id }) {
-            // Сначала обновляем локально
             subGoals[index].isDone.toggle()
             updatedGoal.subGoals = subGoals
             
-            // Затем синхронизируем с Firebase
             do {
                 try await Firestore.firestore()
                     .collection("users")
@@ -144,7 +141,6 @@ class FirebaseService {
                 
                 return updatedGoal
             } catch {
-                // Если ошибка - возвращаем исходное состояние
                 subGoals[index].isDone.toggle()
                 throw error
             }

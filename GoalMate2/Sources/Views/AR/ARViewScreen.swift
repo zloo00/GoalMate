@@ -4,6 +4,7 @@
 //
 //  Created by Алуа Жолдыкан on 29.05.2025.
 //
+
 import SwiftUI
 
 struct ARViewScreen: View {
@@ -24,72 +25,112 @@ struct ARViewScreen: View {
 
     var body: some View {
         ZStack {
+            // AR View Background
             ARSceneView(goals: filteredGoals) { goal in
                 selectedGoal = goal
                 showDetailCard = true
             }
             .edgesIgnoringSafeArea(.all)
 
+            // Control Buttons
             VStack {
                 HStack {
                     Spacer()
-                    VStack(spacing: 10) {
+                    VStack(spacing: 16) {
+                        // Filter Button
                         Button(action: {
-                            showFilters.toggle()
+                            withAnimation(.spring()) {
+                                showFilters.toggle()
+                            }
                         }) {
                             Image(systemName: "slider.horizontal.3")
-                                .padding()
+                                .font(.system(size: 20))
+                                .frame(width: 44, height: 44)
                                 .background(.ultraThinMaterial)
                                 .clipShape(Circle())
                         }
 
+                        // Priority Filters
                         if showFilters {
-                            VStack(spacing: 6) {
-                                Button("All") { selectedPriority = nil }
-                                Button("High") { selectedPriority = "high" }
-                                Button("Medium") { selectedPriority = "medium" }
-                                Button("Low") { selectedPriority = "low" }
+                            VStack(spacing: 8) {
+                                FilterButton(title: "All", isActive: selectedPriority == nil) {
+                                    selectedPriority = nil
+                                }
+                                FilterButton(title: "High", isActive: selectedPriority == "high") {
+                                    selectedPriority = "high"
+                                }
+                                FilterButton(title: "Medium", isActive: selectedPriority == "medium") {
+                                    selectedPriority = "medium"
+                                }
+                                FilterButton(title: "Low", isActive: selectedPriority == "low") {
+                                    selectedPriority = "low"
+                                }
                             }
-                            .font(.caption)
-                            .padding()
+                            .padding(12)
                             .background(.ultraThinMaterial)
-                            .cornerRadius(12)
+                            .cornerRadius(16)
+                            .transition(.scale.combined(with: .opacity))
                         }
 
-                        Button("Close") {
+                        // Close Button
+                        Button(action: {
                             presentationMode.wrappedValue.dismiss()
+                        }) {
+                            Image(systemName: "xmark")
+                                .font(.system(size: 20))
+                                .frame(width: 44, height: 44)
+                                .background(.ultraThinMaterial)
+                                .clipShape(Circle())
                         }
-                        .padding(8)
-                        .background(.ultraThinMaterial)
-                        .cornerRadius(12)
                     }
-                    .padding()
+                    .padding(.top, 50)
+                    .padding(.trailing, 20)
                 }
                 Spacer()
             }
-            
-            if showDetailCard, let goal = selectedGoal {
-                            Color.black.opacity(0.3)
-                                .ignoresSafeArea()
-                                .onTapGesture {
-                                    withAnimation(.easeOut) {
-                                        showDetailCard = false
-                                        selectedGoal = nil
-                                    }
-                                }
 
-                            VStack {
-                                Spacer()
-                                GoalDetailCardView(goal: goal)
-                                    .frame(width: 280, height: 180)
-                                    .background(.ultraThinMaterial)
-                                    .cornerRadius(15)
-                                    .shadow(radius: 10)
-                                    .padding(.bottom, 30)
-                                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                            }
-                            .zIndex(1)
+            // Goal Detail Card
+            if showDetailCard, let goal = selectedGoal {
+                Color.black.opacity(0.4)
+                    .edgesIgnoringSafeArea(.all)
+                    .onTapGesture {
+                        withAnimation(.easeOut) {
+                            showDetailCard = false
+                            selectedGoal = nil
                         }
                     }
+
+                VStack {
+                    Spacer()
+                    GoalDetailCardView(goal: goal)
+                        .frame(width: UIScreen.main.bounds.width * 0.85, height: 220)
+                        .background(.ultraThinMaterial)
+                        .cornerRadius(20)
+                        .shadow(radius: 10)
+                        .padding(.bottom, 40)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
+                .zIndex(1)
             }
+        }
+    }
+}
+
+// Custom Filter Button View
+struct FilterButton: View {
+    let title: String
+    let isActive: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(isActive ? .white : .primary)
+                .padding(.vertical, 6)
+                .padding(.horizontal, 12)
+                .background(isActive ? Color.blue : Color.clear)
+                .cornerRadius(12)
+        }
+    }
+}

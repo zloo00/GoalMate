@@ -76,15 +76,13 @@ struct ARSceneView: UIViewRepresentable {
                 sphere.firstMaterial?.diffuse.contents = color
 
                 let node = SCNNode(geometry: sphere)
-                node.name = "goal_\(goal.id)" // ✅ Используем ID цели
+                node.name = "goal_\(goal.id)"
                 node.position = SCNVector3(Float(index) * 0.2, 0, -0.5 - Float(index) * 0.1)
 
-                // Анимация появления
                 node.scale = SCNVector3(0.01, 0.01, 0.01)
                 let scaleUp = SCNAction.scale(to: 1.0, duration: 0.5)
                 scaleUp.timingMode = .easeOut
 
-                // Плавающая анимация
                 let moveUp = SCNAction.moveBy(x: 0, y: 0.05, z: 0, duration: 1.5)
                 let moveDown = SCNAction.moveBy(x: 0, y: -0.05, z: 0, duration: 1.5)
                 let floatSequence = SCNAction.sequence([moveUp, moveDown])
@@ -92,7 +90,6 @@ struct ARSceneView: UIViewRepresentable {
 
                 node.runAction(SCNAction.sequence([scaleUp, floating]))
 
-                // ✅ Текст под сферой
                 let maxLength = 20
                 let title = goal.title.count > maxLength ? String(goal.title.prefix(maxLength)) + "…" : goal.title
 
@@ -108,7 +105,6 @@ struct ARSceneView: UIViewRepresentable {
                 let textWidth = max.x - min.x
                 textNode.position = SCNVector3(-textWidth * 0.0015, -0.07, 0)
 
-                // Billboard — текст всегда повёрнут к камере
                 textNode.constraints = [SCNBillboardConstraint()]
 
                 node.addChildNode(textNode)

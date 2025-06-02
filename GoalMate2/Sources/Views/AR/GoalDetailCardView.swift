@@ -5,12 +5,11 @@
 //  Created by Алуа Жолдыкан on 02.06.2025.
 //
 
-
 import SwiftUI
 
 struct GoalDetailCardView: View {
     var goal: GoalListItem
-
+    
     var body: some View {
         VStack(spacing: 16) {
             Text(goal.title)
@@ -18,7 +17,8 @@ struct GoalDetailCardView: View {
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)
                 .padding(.top)
-
+                .padding(.horizontal, 24)  
+            
             VStack(alignment: .leading, spacing: 10) {
                 Text("📅 Start Date: \(formatted(Date(timeIntervalSince1970: goal.dueDate)))")
                 if let endDate = goal.repeatEndDate {
@@ -30,17 +30,18 @@ struct GoalDetailCardView: View {
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal)
-
+            .padding(.horizontal, 24)
+            
             Spacer()
         }
-        .padding()
+        .padding(.vertical, 16)
+        .frame(minWidth: 0, maxWidth: .infinity)
         .background(.ultraThinMaterial)
         .cornerRadius(20)
         .shadow(radius: 10)
-        .padding()
+        .padding(.horizontal, 20)
     }
-
+    
     private func formatted(_ date: Date) -> String {
         let formatter = DateFormatter()
         formatter.dateStyle = .medium
