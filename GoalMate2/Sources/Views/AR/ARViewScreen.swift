@@ -67,11 +67,29 @@ struct ARViewScreen: View {
                 }
                 Spacer()
             }
-        }
-        .sheet(isPresented: $showDetailCard) {
-            if let goal = selectedGoal {
-                GoalDetailCardView(goal: goal)
+            
+            if showDetailCard, let goal = selectedGoal {
+                            Color.black.opacity(0.3)
+                                .ignoresSafeArea()
+                                .onTapGesture {
+                                    withAnimation(.easeOut) {
+                                        showDetailCard = false
+                                        selectedGoal = nil
+                                    }
+                                }
+
+                            VStack {
+                                Spacer()
+                                GoalDetailCardView(goal: goal)
+                                    .frame(width: 280, height: 180)
+                                    .background(.ultraThinMaterial)
+                                    .cornerRadius(15)
+                                    .shadow(radius: 10)
+                                    .padding(.bottom, 30)
+                                    .transition(.move(edge: .bottom).combined(with: .opacity))
+                            }
+                            .zIndex(1)
+                        }
+                    }
+                }
             }
-        }
-    }
-}

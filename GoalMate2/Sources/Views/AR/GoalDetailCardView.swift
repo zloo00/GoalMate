@@ -20,7 +20,7 @@ struct GoalDetailCardView: View {
                 .padding(.top)
 
             VStack(alignment: .leading, spacing: 10) {
-                Text("📅 Due: \(formatted(Date(timeIntervalSince1970: goal.dueDate)))")
+                Text("📅 Start Date: \(formatted(Date(timeIntervalSince1970: goal.dueDate)))")
                 if let endDate = goal.repeatEndDate {
                     Text("🔁 Repeats until: \(formatted(Date(timeIntervalSince1970: endDate)))")
                 }
